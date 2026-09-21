@@ -1,12 +1,17 @@
 {
-  "version": 2,
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/index.js" },
-    { "handle": "filesystem" },
-    { "src": "/admin/login", "dest": "/admin/index.html" },
-    { "src": "/admin/login/", "dest": "/admin/index.html" },
-    { "src": "/admin", "dest": "/admin/index.html" },
-    { "src": "/admin/(.*)", "dest": "/admin/index.html" },
-    { "src": "/(about|travel|food|vlogs|reels|gallery|articles|destinations|contact)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/admin/login", "destination": "/admin/index.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" },
+    { "source": "/about", "destination": "/index.html" },
+    { "source": "/travel", "destination": "/index.html" },
+    { "source": "/food", "destination": "/index.html" },
+    { "source": "/vlogs", "destination": "/index.html" },
+    { "source": "/reels", "destination": "/index.html" },
+    { "source": "/gallery", "destination": "/index.html" },
+    { "source": "/articles", "destination": "/index.html" },
+    { "source": "/destinations", "destination": "/index.html" },
+    { "source": "/contact", "destination": "/index.html" }
   ]
 }
