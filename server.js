@@ -24,13 +24,16 @@ const JWT_SECRET = process.env.JWT_SECRET || 'veyra_trails_fallback_secret_key_2
 initDatabase();
 
 // Ensure upload directories exist
-const uploadsDir = path.join(__dirname, 'uploads');
+const isVercelEnv = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const uploadsDir = isVercelEnv ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads');
 const videosDir = path.join(uploadsDir, 'videos');
 const thumbsDir = path.join(uploadsDir, 'thumbnails');
 
 [uploadsDir, videosDir, thumbsDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+    } catch (e) {}
   }
 });
 
@@ -876,7 +879,11 @@ app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Veyra Trails Server running on port ${PORT} (0.0.0.0)`);
-});
+export default app;
+
+if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Veyra Trails Server running on port ${PORT} (0.0.0.0)`);
+  });
+}
 

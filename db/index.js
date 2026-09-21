@@ -7,7 +7,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dataDir = path.join(__dirname, '..', 'data');
+const isVercel = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+const dataDir = isVercel ? path.join('/tmp', 'data') : path.join(__dirname, '..', 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -15,8 +16,9 @@ if (!fs.existsSync(dataDir)) {
 const dbPath = path.join(dataDir, 'vlogger.db');
 const db = new Database(dbPath);
 
-// Enable WAL mode for high concurrency
-db.pragma('journal_mode = WAL');
+try {
+  db.pragma('journal_mode = WAL');
+} catch (e) {}
 
 export function initDatabase() {
   db.exec(`
