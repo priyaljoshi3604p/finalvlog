@@ -1,0 +1,16 @@
+# Render Blueprint Configuration for Veyra Trails Web Service
+services:
+  - type: web
+    name: veyra-trails-studio
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
