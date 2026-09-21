@@ -3,6 +3,11 @@
 .env.local
 *.env
 
+# SQLite Database Files
+data/
+*.db
+*.db-journal
+
 # Node Dependencies
 node_modules/
 npm-debug.log*

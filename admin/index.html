@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veyra Trails — Owner Studio</title>
+  <meta name="description" content="Private Owner Control Studio for Veyra Trails.">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+
+  <!-- Fonts & Material Symbols matching Public Website EXACTLY -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Great+Vibes&family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0..1">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Admin Theme Styles inheriting Public Site -->
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="bg-surface text-on-surface font-body antialiased selection:bg-secondary-container selection:text-on-secondary-container">
+
+  <!-- ==========================================================================
+     1. ADMIN LOGIN VIEW (/admin/login) - CINEMATIC SPLIT STUDIO EXPERIENCE
+     ========================================================================== -->
+  <div id="admin-login-section" class="min-h-screen w-full flex items-stretch overflow-hidden bg-[#0f111a] text-white">
+    
+    <!-- LEFT COLUMN: Editorial Travel Image Hero Canvas -->
+    <div class="hidden md:flex w-1/2 lg:w-3/5 relative overflow-hidden flex-col justify-between p-12 lg:p-16 bg-black">
+      <img src="../assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404" class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000" alt="Veyra Trails Landscape">
+      <div class="absolute inset-0 bg-gradient-to-t from-[#0b0d12] via-[#0b0d12]/50 to-transparent"></div>
+
+      <div class="relative z-10 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur text-white flex items-center justify-center font-bold text-sm border border-white/20">
+          V
+        </div>
+        <span class="font-headline text-lg tracking-[0.25em] uppercase font-bold text-white">Veyra Trails</span>
+      </div>
+
+      <div class="relative z-10 space-y-4 max-w-lg">
+        <span class="text-[10px] tracking-[0.3em] uppercase text-amber-400 font-semibold">[ OWNER CREATOR STUDIO ]</span>
+        <h2 class="font-headline text-3xl sm:text-5xl font-light leading-tight text-white">
+          "Travel. Taste. Tell the Story."
+        </h2>
+        <p class="text-xs text-white/70 font-light leading-relaxed">
+          Exploring hidden places, unforgettable flavors and stories worth sharing.
+        </p>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Clean Creator Studio Login Form -->
+    <div class="w-full md:w-1/2 lg:w-2/5 flex flex-col justify-between p-8 sm:p-12 lg:p-16 bg-gradient-to-b from-[#131622] to-[#0b0d12] relative z-10">
+      
+      <div class="flex justify-end">
+        <a href="../" class="inline-flex items-center gap-2 text-xs text-white/70 hover:text-white tracking-[0.15em] uppercase font-medium transition-colors">
+          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+          <span>Back to Veyra Trails</span>
+        </a>
+      </div>
+
+      <div class="my-auto max-w-md w-full mx-auto space-y-8">
+        <div class="space-y-2">
+          <div class="w-12 h-12 rounded-full bg-primary/20 text-primary-fixed border border-primary/30 flex items-center justify-center font-bold text-base shadow-sm mb-4">
+            V
+          </div>
+          <span class="text-[10px] tracking-[0.25em] uppercase text-tertiary font-semibold">Private Access</span>
+          <h1 class="font-headline text-3xl sm:text-4xl font-light text-white tracking-tight">Owner Studio</h1>
+          <p class="text-xs text-white/60 font-light">Manage your stories, destinations and experiences.</p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="admin-login-form" class="space-y-5">
+          <div class="space-y-2">
+            <label class="block text-[10px] tracking-[0.2em] uppercase text-white/70 font-medium">Email / Username</label>
+            <div class="relative">
+              <input type="email" id="login-email" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 pl-10 text-xs text-white placeholder-white/40 focus:outline-none focus:border-primary transition-all font-light" placeholder="owner@veyratrails.com">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-[18px]">mail</span>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-[10px] tracking-[0.2em] uppercase text-white/70 font-medium">Password</label>
+            <div class="relative">
+              <input type="password" id="login-password" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 pl-10 pr-10 text-xs text-white placeholder-white/40 focus:outline-none focus:border-primary transition-all font-light" placeholder="••••••••">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-[18px]">lock</span>
+              <button type="button" id="toggle-password-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-white/60">
+            <label class="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+              <input type="checkbox" checked class="rounded bg-white/10 border-white/20 text-primary focus:ring-primary">
+              <span>Remember Me</span>
+            </label>
+            <a href="#" id="forgot-password-link" class="text-amber-400 hover:underline transition-colors font-medium">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="w-full py-3.5 bg-primary text-on-primary text-xs tracking-[0.2em] uppercase font-medium rounded-full hover:bg-primary-container transition-colors shadow-lg flex items-center justify-center gap-2 cursor-pointer mt-4">
+            <span>Enter Studio</span>
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="text-center pt-6 text-[10px] text-white/40 font-mono tracking-widest uppercase">
+        Veyra Trails Creator Engine © 2026
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==========================================================================
+     2. PROTECTED ADMIN PORTAL APP SHELL (VEYRA TRAILS STUDIO)
+     ========================================================================== -->
+  <div id="admin-app-shell" class="hidden min-h-screen flex relative bg-surface">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar flex flex-col justify-between p-5 shadow-sm bg-white border-r border-outline-variant/30">
+      <div class="space-y-6">
+        
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between px-2 pt-1">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shadow-md">
+              V
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-on-surface font-headline tracking-wider uppercase">Veyra Trails</h2>
+              <p class="text-[9px] text-primary font-semibold tracking-widest uppercase">Owner Studio</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Links matching requirements -->
+        <nav id="sidebar-nav" class="space-y-1">
+          <a href="#dashboard" data-route="dashboard" class="nav-item">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Overview</span>
+          </a>
+          <a href="#destinations" data-route="destinations" class="nav-item">
+            <span class="material-symbols-outlined">location_on</span>
+            <span>Destinations</span>
+          </a>
+          <a href="#videos" data-route="videos" class="nav-item">
+            <span class="material-symbols-outlined">movie</span>
+            <span>Videos</span>
+          </a>
+          <a href="#articles" data-route="articles" class="nav-item">
+            <span class="material-symbols-outlined">edit_note</span>
+            <span>Stories</span>
+          </a>
+          <a href="#enquiries" data-route="enquiries" class="nav-item">
+            <span class="material-symbols-outlined">mail</span>
+            <span>Messages</span>
+          </a>
+          <a href="#visitors" data-route="visitors" class="nav-item">
+            <span class="material-symbols-outlined">insights</span>
+            <span>Visitors</span>
+          </a>
+          <a href="#social" data-route="social" class="nav-item">
+            <span class="material-symbols-outlined">share</span>
+            <span>Social Media</span>
+          </a>
+          <a href="#contact-info" data-route="contact-info" class="nav-item">
+            <span class="material-symbols-outlined">call</span>
+            <span>Website</span>
+          </a>
+          <a href="#settings" data-route="settings" class="nav-item">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+          </a>
+          <a href="#activity" data-route="activity" class="nav-item">
+            <span class="material-symbols-outlined">history</span>
+            <span>Activity Log</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="pt-4 border-t border-outline-variant/30 space-y-2">
+        <a href="../" target="_blank" class="nav-item text-xs text-primary">
+          <span class="material-symbols-outlined text-[18px]">public</span>
+          <span>View Website</span>
+        </a>
+        <a href="#login" id="logout-btn" class="nav-item text-xs text-red-600 hover:bg-red-50">
+          <span class="material-symbols-outlined text-[18px]">logout</span>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT CANVAS -->
+    <main class="admin-main">
+
+      <!-- TOP HEADER BAR -->
+      <header class="admin-header">
+        <div class="flex items-center gap-4">
+          <button id="admin-mobile-toggle" class="lg:hidden p-2 text-on-surface-variant hover:text-primary">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <div>
+            <h1 id="page-title" class="text-2xl font-bold text-on-surface font-headline leading-tight">Veyra Trails Studio</h1>
+            <p id="page-subtitle" class="text-xs text-on-surface-variant font-light hidden sm:block">Overview of your stories, destinations, videos and enquiries</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <!-- Global Search -->
+          <div class="relative hidden md:block w-64">
+            <input type="text" id="global-search-input" class="admin-input text-xs pl-8 py-2" placeholder="Search studio content...">
+            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[16px]">search</span>
+          </div>
+
+          <!-- Admin Profile Badge -->
+          <div class="flex items-center gap-3 pl-3 border-l border-outline-variant/30">
+            <img id="user-avatar" src="../assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d" class="w-8 h-8 rounded-full object-cover border border-primary" alt="Owner Avatar">
+            <div class="hidden sm:block text-left">
+              <p id="user-display-name" class="text-xs font-bold text-on-surface leading-tight">Veyra Trails Owner</p>
+              <span id="user-role-badge" class="badge-status badge-role-owner">OWNER</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- VIEWS CANVAS -->
+      <div class="p-6 lg:p-8 flex-1">
+
+        <!-- 1. DASHBOARD OVERVIEW VIEW -->
+        <section id="view-dashboard" class="admin-view space-y-8">
+          
+          <!-- Top Greeting & Quick Actions -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 sm:p-8 admin-glass rounded-3xl border border-outline-variant/30 bg-white">
+            <div>
+              <span class="text-[10px] font-semibold uppercase tracking-[0.25em] text-tertiary">[ OWNER CREATOR STUDIO ]</span>
+              <h2 id="dash-greeting" class="text-3xl sm:text-4xl font-light text-on-surface font-headline mt-1">Good Morning, Owner</h2>
+              <p class="text-xs text-on-surface-variant font-light mt-1">Overview of your vlogger portfolio content and visitor enquiries.</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+              <button id="add-video-btn" class="btn-primary text-xs">
+                <span class="material-symbols-outlined text-[16px]">add</span>
+                <span>Add Video</span>
+              </button>
+              <button id="add-dest-btn" class="btn-secondary text-xs">
+                <span class="material-symbols-outlined text-[16px]">add</span>
+                <span>Add Destination</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Overview Stat Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="admin-glass p-6 rounded-2xl flex flex-col justify-between admin-glass-hover">
+              <div class="flex items-center justify-between text-on-surface-variant">
+                <span class="text-[10px] font-semibold uppercase tracking-[0.2em]">DESTINATIONS</span>
+                <span class="material-symbols-outlined text-primary text-[22px]">location_on</span>
+              </div>
+              <p id="dash-stat-destinations" class="text-4xl font-light text-on-surface font-headline mt-4">12</p>
+              <span class="text-[11px] text-emerald-600 mt-1">Curated Guides</span>
+            </div>
+
+            <div class="admin-glass p-6 rounded-2xl flex flex-col justify-between admin-glass-hover">
+              <div class="flex items-center justify-between text-on-surface-variant">
+                <span class="text-[10px] font-semibold uppercase tracking-[0.2em]">VIDEOS</span>
+                <span class="material-symbols-outlined text-primary text-[22px]">movie</span>
+              </div>
+              <p id="dash-stat-videos" class="text-4xl font-light text-on-surface font-headline mt-4">28</p>
+              <span class="text-[11px] text-emerald-600 mt-1">Documentary Vlogs</span>
+            </div>
+
+            <div class="admin-glass p-6 rounded-2xl flex flex-col justify-between admin-glass-hover">
+              <div class="flex items-center justify-between text-on-surface-variant">
+                <span class="text-[10px] font-semibold uppercase tracking-[0.2em]">STORIES</span>
+                <span class="material-symbols-outlined text-tertiary text-[22px]">edit_note</span>
+              </div>
+              <p id="dash-stat-articles" class="text-4xl font-light text-on-surface font-headline mt-4">16</p>
+              <span class="text-[11px] text-emerald-600 mt-1">Travel Essays</span>
+            </div>
+
+            <div class="admin-glass p-6 rounded-2xl flex flex-col justify-between admin-glass-hover">
+              <div class="flex items-center justify-between text-on-surface-variant">
+                <span class="text-[10px] font-semibold uppercase tracking-[0.2em]">MESSAGES</span>
+                <span class="material-symbols-outlined text-amber-600 text-[22px]">mail</span>
+              </div>
+              <p id="dash-stat-messages" class="text-4xl font-light text-on-surface font-headline mt-4">08</p>
+              <span class="text-[11px] text-amber-600 mt-1">Public Inquiries</span>
+            </div>
+          </div>
+
+          <!-- Activity List -->
+          <div class="admin-glass p-6 rounded-3xl">
+            <div class="flex items-center justify-between mb-4 border-b border-black/10 pb-3">
+              <h3 class="text-lg font-bold text-[#1d1b20] font-headline">Recent System Activity</h3>
+              <a href="#activity" class="text-xs text-[#4f378a] hover:underline font-medium">View All Activity</a>
+            </div>
+            <div id="dash-recent-activity" class="space-y-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. VIDEOS VIEW -->
+        <section id="view-videos" class="admin-view space-y-6 hidden">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-black/10">
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              <input type="text" id="video-search-input" class="admin-input text-xs w-full sm:w-64" placeholder="Search videos...">
+              <select id="video-cat-filter" class="admin-input text-xs w-auto">
+                <option value="all">All Categories</option>
+                <option value="Travel">Travel</option>
+                <option value="Food">Food</option>
+                <option value="Adventure">Adventure</option>
+                <option value="Lifestyle">Lifestyle</option>
+                <option value="Daily Vlog">Daily Vlog</option>
+              </select>
+            </div>
+            <button class="btn-primary text-xs shrink-0 w-full sm:w-auto" onclick="document.getElementById('add-video-btn').click()">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              <span>Add Video</span>
+            </button>
+          </div>
+
+          <div id="videos-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- 3. REELS VIEW -->
+        <section id="view-reels" class="admin-view space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-black/10">
+            <p class="text-xs text-[#494551]">Manage Instagram Reels &amp; short videos</p>
+            <button id="add-reel-btn" class="btn-primary text-xs">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              <span>Add Reel</span>
+            </button>
+          </div>
+          <div id="reels-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- 4. BLOG / ARTICLES VIEW -->
+        <section id="view-articles" class="admin-view space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-black/10">
+            <p class="text-xs text-[#494551]">Manage travel journal blog posts &amp; culinary essays</p>
+            <button id="add-article-btn" class="btn-primary text-xs">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              <span>Write Blog Post</span>
+            </button>
+          </div>
+          <div id="articles-list-container" class="space-y-4">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- 5. GALLERY VIEW -->
+        <section id="view-gallery" class="admin-view space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-black/10">
+            <p class="text-xs text-[#494551]">Manage travel photography gallery</p>
+            <button id="add-gallery-btn" class="btn-primary text-xs">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              <span>Upload Photo</span>
+            </button>
+          </div>
+          <div id="gallery-grid-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- 6. DESTINATIONS VIEW -->
+        <section id="view-destinations" class="admin-view space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-black/10">
+            <p class="text-xs text-[#494551]">Manage destination guides (Kerala, Goa, Bali, Dubai, Munnar, Tokyo + custom)</p>
+            <button id="add-dest-btn" class="btn-primary text-xs">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              <span>Add Destination</span>
+            </button>
+          </div>
+          <div id="destinations-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- 7. PROMOTIONS VIEW -->
+        <section id="view-promotions" class="admin-view space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-black/10">
+            <p class="text-xs text-[#494551]">Manage brand partnerships, sponsorships, and campaigns</p>
+            <button id="add-promo-btn" class="btn-primary text-xs">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              <span>Add Campaign</span>
+            </button>
+          </div>
+          <div id="promotions-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- ENQUIRIES VIEW -->
+        <section id="view-enquiries" class="admin-view space-y-6 hidden">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-black/10">
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              <input type="text" id="enquiry-search-input" class="admin-input text-xs w-full sm:w-64" placeholder="Search enquiries by name, email, subject...">
+              <select id="enquiry-status-filter" class="admin-input text-xs w-auto">
+                <option value="All">All Statuses</option>
+                <option value="New">New</option>
+                <option value="Read">Read</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+            <span class="text-xs text-[#494551] font-medium">SQLite Database Live Inbox</span>
+          </div>
+
+          <div class="admin-glass rounded-3xl p-6 border border-black/10 overflow-x-auto bg-white">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-black/10 text-[#494551] uppercase font-semibold">
+                  <th class="p-3">Received</th>
+                  <th class="p-3">Visitor</th>
+                  <th class="p-3">Subject</th>
+                  <th class="p-3">Message Preview</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="enquiries-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- VISITORS VIEW -->
+        <section id="view-visitors" class="admin-view space-y-6 hidden">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="admin-glass p-5 rounded-2xl bg-white border border-black/10">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[#494551]">Total Unique Visitors</span>
+              <p id="visitor-stat-unique" class="text-3xl font-bold text-[#1d1b20] font-headline mt-2">0</p>
+              <span class="text-[11px] text-emerald-600">Tracked Sessions</span>
+            </div>
+            <div class="admin-glass p-5 rounded-2xl bg-white border border-black/10">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[#494551]">Total Page Views</span>
+              <p id="visitor-stat-views" class="text-3xl font-bold text-[#1d1b20] font-headline mt-2">0</p>
+              <span class="text-[11px] text-emerald-600">Page hits recorded</span>
+            </div>
+            <div class="admin-glass p-5 rounded-2xl bg-white border border-black/10">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[#494551]">Tracking Mode</span>
+              <p class="text-xl font-bold text-[#4f378a] font-headline mt-2">Active Beacon</p>
+              <span class="text-[11px] text-[#79747e]">SQLite Visitor Engine</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-8 admin-glass p-6 rounded-3xl border border-black/10 bg-white space-y-4">
+              <h3 class="text-base font-bold text-[#1d1b20] font-headline">Recent Visitor Traffic</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr class="border-b border-black/10 text-[#494551] uppercase font-semibold">
+                      <th class="p-2.5">Time</th>
+                      <th class="p-2.5">Session ID</th>
+                      <th class="p-2.5">Page Visited</th>
+                      <th class="p-2.5">IP Address</th>
+                    </tr>
+                  </thead>
+                  <tbody id="visitors-table-body">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="lg:col-span-4 admin-glass p-6 rounded-3xl border border-black/10 bg-white space-y-4">
+              <h3 class="text-base font-bold text-[#1d1b20] font-headline">Most Visited Pages</h3>
+              <div id="top-pages-list" class="space-y-3 text-xs">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. MESSAGES / ENQUIRIES VIEW -->
+        <section id="view-messages" class="admin-view hidden">
+          <div class="admin-glass rounded-3xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[550px] border border-black/10">
+            <!-- Left Message List -->
+            <div class="lg:col-span-5 border-r border-black/10 flex flex-col bg-white">
+              <div class="p-4 border-b border-black/10 flex items-center justify-between">
+                <h3 class="text-sm font-bold text-[#1d1b20]">Public Contact Submissions</h3>
+                <span class="badge-status badge-unread">Live Form</span>
+              </div>
+              <div id="messages-list-container" class="flex-1 overflow-y-auto max-h-[500px]">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Right Detail View -->
+            <div id="message-detail-container" class="lg:col-span-7 bg-[#fdf7ff]">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. ABOUT VLOGGER PROFILE VIEW -->
+        <section id="view-profile" class="admin-view hidden max-w-4xl">
+          <form id="profile-form" class="admin-glass p-8 rounded-3xl space-y-6 border border-black/10 bg-white">
+            <div class="border-b border-black/10 pb-4">
+              <h3 class="text-xl font-bold text-[#1d1b20] font-headline">Vlogger Profile &amp; Bio Settings</h3>
+              <p class="text-xs text-[#494551] font-light mt-0.5">Controls the public #about section text, bio, profile photo, and location.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Vlogger Name</label>
+                <input type="text" id="prof-name" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Tagline</label>
+                <input type="text" id="prof-tagline" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Location</label>
+                <input type="text" id="prof-location" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Profile Photo URL</label>
+                <input type="url" id="prof-img" class="admin-input">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs text-[#494551] font-medium mb-1">Biography</label>
+                <textarea id="prof-bio" class="admin-input h-24"></textarea>
+              </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+              <button type="submit" class="btn-primary">Save Profile Info</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- 10. CONTACT INFO VIEW -->
+        <section id="view-contact-info" class="admin-view hidden max-w-4xl">
+          <form id="contact-info-form" class="admin-glass p-8 rounded-3xl space-y-6 border border-black/10 bg-white">
+            <div class="border-b border-black/10 pb-4">
+              <h3 class="text-xl font-bold text-[#1d1b20] font-headline">Contact Information Settings</h3>
+              <p class="text-xs text-[#494551] font-light mt-0.5">Control email, phone, and inquiry details displayed on the website.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Public Contact Email</label>
+                <input type="email" id="info-email" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Phone Number</label>
+                <input type="text" id="info-phone" class="admin-input">
+              </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+              <button type="submit" class="btn-primary">Save Contact Info</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- 11. SOCIAL MEDIA VIEW -->
+        <section id="view-social" class="admin-view hidden max-w-4xl">
+          <form id="social-form" class="admin-glass p-8 rounded-3xl space-y-6 border border-black/10 bg-white">
+            <div class="border-b border-black/10 pb-4">
+              <h3 class="text-xl font-bold text-[#1d1b20] font-headline">Social Media Handles</h3>
+              <p class="text-xs text-[#494551] font-light mt-0.5">Update external links for YouTube, Instagram, Twitter/X, and Facebook.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">YouTube Channel URL</label>
+                <input type="url" id="soc-yt" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Instagram Handle URL</label>
+                <input type="url" id="soc-ig" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Twitter / X URL</label>
+                <input type="url" id="soc-tw" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Facebook URL</label>
+                <input type="url" id="soc-fb" class="admin-input">
+              </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+              <button type="submit" class="btn-primary">Save Social Media Links</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- 12. SITE SETTINGS VIEW -->
+        <section id="view-settings" class="admin-view hidden max-w-4xl">
+          <form id="settings-form" class="admin-glass p-8 rounded-3xl space-y-6 border border-black/10 bg-white">
+            <div class="border-b border-black/10 pb-4">
+              <h3 class="text-xl font-bold text-[#1d1b20] font-headline">General Site &amp; SEO Configuration</h3>
+              <p class="text-xs text-[#494551] font-light mt-0.5">Control website titles, SEO metadata, and share cards.</p>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Website Name</label>
+                <input type="text" id="set-name" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">SEO Title Tag</label>
+                <input type="text" id="set-seo-title" class="admin-input">
+              </div>
+              <div>
+                <label class="block text-xs text-[#494551] font-medium mb-1">Meta Description</label>
+                <textarea id="set-seo-desc" class="admin-input h-20"></textarea>
+              </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+              <button type="submit" class="btn-primary">Save Site Settings</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- 13. TEAM VIEW -->
+        <section id="view-team" class="admin-view space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-black/10">
+            <p class="text-xs text-[#494551]">Manage team access roles (OWNER, EDITOR, MANAGER, VIEWER)</p>
+            <button id="add-team-btn" class="btn-primary text-xs">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              <span>Add Admin</span>
+            </button>
+          </div>
+          <div id="team-list-container" class="space-y-4">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- 14. ACTIVITY LOG VIEW -->
+        <section id="view-activity" class="admin-view hidden">
+          <div class="admin-glass rounded-3xl p-6 border border-black/10 overflow-x-auto bg-white">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-black/10 text-xs text-[#494551] uppercase font-semibold">
+                  <th class="p-3">Timestamp</th>
+                  <th class="p-3">Admin</th>
+                  <th class="p-3">Action</th>
+                  <th class="p-3">Details</th>
+                  <th class="p-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="logs-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+
+  <!-- ==========================================================================
+     FORM MODALS & DIALOGS
+     ========================================================================== -->
+
+  <!-- Video Form Modal -->
+  <div id="video-form-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box p-6 sm:p-8 space-y-5">
+      <div class="flex items-center justify-between border-b border-black/10 pb-4">
+        <h3 id="video-form-title" class="text-lg font-bold text-[#1d1b20] font-headline">Add Travel Vlog</h3>
+        <button id="close-video-form-btn" type="button" class="text-[#79747e] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="video-modal-form" class="space-y-4">
+        <input type="hidden" id="video-id-input">
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Video Title *</label>
+          <input type="text" id="video-title-input" required class="admin-input" placeholder="e.g. Exploring Munnar Tea Gardens">
+        </div>
+
+        <div class="p-3 bg-purple-50/70 rounded-xl border border-purple-100 space-y-3">
+          <label class="block text-xs font-bold text-[#4f378a]">Video Source (File Upload or YouTube URL) *</label>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#494551] mb-1">Upload Video File (.mp4, .webm, .mov):</label>
+            <input type="file" id="video-file-input" accept="video/mp4,video/webm,video/quicktime,video/*" class="admin-input text-xs py-1.5 bg-white">
+          </div>
+          <div class="text-center text-[10px] uppercase font-bold text-[#79747e] tracking-wider">— OR —</div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#494551] mb-1">YouTube Video URL:</label>
+            <input type="url" id="video-yt-input" class="admin-input" placeholder="https://www.youtube.com/watch?v=5D3cZ-6tGkY">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Category</label>
+            <select id="video-cat-input" class="admin-input">
+              <option value="Travel">Travel</option>
+              <option value="Food">Food</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Lifestyle">Lifestyle</option>
+              <option value="Daily Vlog">Daily Vlog</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Duration</label>
+            <input type="text" id="video-duration-input" class="admin-input" placeholder="14:20">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Location / Destination</label>
+          <input type="text" id="video-location-input" class="admin-input" placeholder="Munnar, Kerala">
+        </div>
+
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
+          <label class="block text-xs font-bold text-[#1d1b20]">Thumbnail Cover Image</label>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#494551] mb-1">Upload Image File (.jpg, .png, .webp):</label>
+            <input type="file" id="video-thumb-file-input" accept="image/*" class="admin-input text-xs py-1.5 bg-white">
+          </div>
+          <div class="text-center text-[10px] uppercase font-bold text-[#79747e] tracking-wider">— OR —</div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#494551] mb-1">Thumbnail Image URL:</label>
+            <input type="url" id="video-thumb-input" class="admin-input" placeholder="Auto-extracted for YouTube or paste image URL">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Description</label>
+          <textarea id="video-desc-input" class="admin-input h-20" placeholder="Brief description of the vlog episode..."></textarea>
+        </div>
+        <div class="flex items-center gap-6 pt-2">
+          <label class="flex items-center gap-2 cursor-pointer text-xs text-[#494551]">
+            <input type="checkbox" id="video-featured-input" class="rounded text-[#4f378a]">
+            <span>Mark as Featured</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer text-xs text-[#494551]">
+            <input type="checkbox" id="video-published-input" checked class="rounded text-[#4f378a]">
+            <span>Published (Active)</span>
+          </label>
+        </div>
+        <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('video-form-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" id="save-video-submit-btn" class="btn-primary">Save Video</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Destination Form Modal -->
+  <div id="dest-form-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box p-6 sm:p-8 space-y-5">
+      <div class="flex items-center justify-between border-b border-black/10 pb-4">
+        <h3 id="dest-modal-title" class="text-lg font-bold text-[#1d1b20] font-headline">Add Destination</h3>
+        <button id="close-dest-form-btn" class="text-[#79747e] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="dest-modal-form" class="space-y-4">
+        <input type="hidden" id="dest-id-input">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Destination Name</label>
+            <input type="text" id="dest-name-input" required class="admin-input" placeholder="Munnar">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Country</label>
+            <input type="text" id="dest-country-input" required class="admin-input" placeholder="India">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Short Description</label>
+          <input type="text" id="dest-shortdesc-input" class="admin-input">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Long Description</label>
+          <textarea id="dest-longdesc-input" class="admin-input h-20"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Hero Image URL</label>
+          <input type="url" id="dest-heroimg-input" required class="admin-input">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Food to Try</label>
+            <input type="text" id="dest-food-input" class="admin-input">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Places to Visit</label>
+            <input type="text" id="dest-places-input" class="admin-input">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Best Time to Visit</label>
+            <input type="text" id="dest-besttime-input" class="admin-input" placeholder="October to March">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">YouTube Video URL</label>
+            <input type="url" id="dest-videourl-input" class="admin-input">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Curated Experiences</label>
+          <input type="text" id="dest-exp-input" class="admin-input">
+        </div>
+        <div class="flex items-center gap-6 pt-2">
+          <label class="flex items-center gap-2 cursor-pointer text-xs text-[#494551]">
+            <input type="checkbox" id="dest-featured-input" class="rounded text-[#4f378a]">
+            <span>Featured</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer text-xs text-[#494551]">
+            <input type="checkbox" id="dest-published-input" checked class="rounded text-[#4f378a]">
+            <span>Published</span>
+          </label>
+        </div>
+        <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('dest-form-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Destination</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Promotions Form Modal -->
+  <div id="promo-form-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box p-6 sm:p-8 space-y-5">
+      <div class="flex items-center justify-between border-b border-black/10 pb-4">
+        <h3 id="promo-modal-title" class="text-lg font-bold text-[#1d1b20] font-headline">Add Brand Campaign</h3>
+        <button id="close-promo-form-btn" class="text-[#79747e] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="promo-modal-form" class="space-y-4">
+        <input type="hidden" id="promo-id-input">
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Brand Name</label>
+          <input type="text" id="promo-brand-input" required class="admin-input" placeholder="Fujifilm / Peak Design">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Campaign Title</label>
+          <input type="text" id="promo-title-input" required class="admin-input" placeholder="X-T5 Color Expedition">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Campaign Link</label>
+          <input type="url" id="promo-url-input" class="admin-input" placeholder="https://brand.com">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Campaign Cover Image</label>
+          <input type="url" id="promo-img-input" required class="admin-input">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Description</label>
+          <textarea id="promo-desc-input" class="admin-input h-20"></textarea>
+        </div>
+        <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('promo-form-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Campaign</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Article / Blog Post Form Modal -->
+  <div id="article-form-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box max-w-3xl p-6 sm:p-8 space-y-6">
+      <div class="flex items-center justify-between border-b border-black/10 pb-4">
+        <div class="flex items-center gap-3">
+          <button type="button" id="art-back-btn" class="p-1 text-[#494551] hover:text-[#4f378a] rounded-lg transition-colors flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+          </button>
+          <div>
+            <h3 id="art-modal-title" class="text-xl font-bold text-[#1d1b20] font-headline leading-tight">Write Blog Post</h3>
+            <p class="text-xs text-[#494551] font-light">Create or edit a story for your travel &amp; culinary journal</p>
+          </div>
+        </div>
+        <button type="button" id="close-art-form-btn" class="text-[#79747e] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form id="article-modal-form" class="space-y-5">
+        <input type="hidden" id="art-id-input">
+        <input type="hidden" id="art-status-input" value="published">
+
+        <!-- Title -->
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Blog Title <span class="text-red-500">*</span></label>
+          <input type="text" id="art-title-input" required class="admin-input text-sm font-medium" placeholder="e.g., Chai, Clouds, & Silent Ridges: 48 Hours in Munnar">
+        </div>
+
+        <!-- Category & Date & Read Time -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Category <span class="text-red-500">*</span></label>
+            <select id="art-cat-input" required class="admin-input">
+              <option value="Travel Essay">Travel Essay</option>
+              <option value="Food Guide">Food Guide</option>
+              <option value="Destination">Destination</option>
+              <option value="Travel Tips">Travel Tips</option>
+              <option value="Culture">Culture</option>
+              <option value="Adventure">Adventure</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Publishing Date <span class="text-red-500">*</span></label>
+            <input type="date" id="art-date-input" required class="admin-input">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Estimated Read Time</label>
+            <input type="text" id="art-readtime-input" class="admin-input" placeholder="e.g., 6 min read">
+          </div>
+        </div>
+
+        <!-- Cover Image Upload & Preview -->
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Cover Image <span class="text-red-500">*</span></label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+            <div class="sm:col-span-2 space-y-2">
+              <div class="flex items-center gap-2">
+                <input type="url" id="art-img-input" required class="admin-input text-xs" placeholder="https://images.unsplash.com/... or upload image below">
+              </div>
+              <div class="flex items-center gap-3 pt-1">
+                <label class="inline-flex items-center gap-2 px-3 py-2 bg-purple-50 hover:bg-purple-100 text-[#4f378a] border border-[#4f378a]/30 rounded-lg text-xs font-medium cursor-pointer transition-colors">
+                  <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+                  <span>Upload Image File</span>
+                  <input type="file" id="art-img-file-input" accept="image/*" class="hidden">
+                </label>
+                <span id="art-file-name" class="text-[11px] text-[#79747e] truncate max-w-[200px]">No file selected</span>
+              </div>
+            </div>
+
+            <!-- Image Preview Box -->
+            <div class="relative aspect-[16/10] bg-purple-50 rounded-xl overflow-hidden border border-black/10 flex items-center justify-center group">
+              <img id="art-img-preview" src="" class="w-full h-full object-cover hidden" alt="Cover Image Preview">
+              <div id="art-img-placeholder" class="text-center p-3 text-[#79747e]">
+                <span class="material-symbols-outlined text-2xl">image</span>
+                <p class="text-[10px] mt-1 font-light">Image Preview</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Short Description / Excerpt -->
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Short Description / Excerpt <span class="text-red-500">*</span></label>
+          <textarea id="art-desc-input" required class="admin-input h-20 text-xs font-light" placeholder="A captivating summary shown on the Stories list..."></textarea>
+        </div>
+
+        <!-- Blog Content / Main Article Body -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-[#494551]">Blog Content <span class="text-red-500">*</span></label>
+            <span class="text-[11px] text-[#79747e]">Supports Markdown / HTML text</span>
+          </div>
+          <textarea id="art-content-input" required class="admin-input h-48 text-xs font-mono leading-relaxed" placeholder="Write your complete travel story or culinary article here..."></textarea>
+        </div>
+
+        <!-- Pull Quote (Optional) -->
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Pull Quote (Optional)</label>
+          <input type="text" id="art-quote-input" class="admin-input italic text-xs" placeholder="e.g., &quot;Standing on Lockhart Gap at sunrise feels like watching earth being created anew.&quot;">
+        </div>
+
+        <!-- Status & Actions -->
+        <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-black/10">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-[#494551] font-medium">Status:</span>
+            <span id="art-status-badge" class="badge-status badge-published">PUBLISHED</span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+            <button type="button" id="art-cancel-btn" class="btn-secondary text-xs">Cancel</button>
+            <button type="button" id="art-save-draft-btn" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-full text-xs tracking-wider uppercase transition-colors border border-gray-300">
+              Save Draft
+            </button>
+            <button type="submit" id="art-publish-btn" class="btn-primary text-xs">
+              <span class="material-symbols-outlined text-[16px]">publish</span>
+              <span>Publish</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Gallery Form Modal -->
+  <div id="gallery-form-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box p-6 sm:p-8 space-y-5">
+      <div class="flex items-center justify-between border-b border-black/10 pb-4">
+        <h3 id="gal-modal-title" class="text-lg font-bold text-[#1d1b20] font-headline">Upload Gallery Photo</h3>
+        <button id="close-gal-form-btn" class="text-[#79747e] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="gallery-modal-form" class="space-y-4">
+        <input type="hidden" id="gal-id-input">
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Photo Title</label>
+          <input type="text" id="gal-title-input" required class="admin-input">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Image URL</label>
+          <input type="url" id="gal-img-input" required class="admin-input">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Category</label>
+            <select id="gal-cat-input" class="admin-input">
+              <option value="Travel">Travel</option>
+              <option value="Food">Food</option>
+              <option value="Nature">Nature</option>
+              <option value="People">People</option>
+              <option value="City">City</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Behind the Scenes">Behind the Scenes</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Location</label>
+            <input type="text" id="gal-location-input" class="admin-input">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Caption</label>
+          <input type="text" id="gal-caption-input" class="admin-input">
+        </div>
+        <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('gallery-form-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Image</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reels Form Modal -->
+  <div id="reel-form-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box p-6 sm:p-8 space-y-5">
+      <div class="flex items-center justify-between border-b border-black/10 pb-4">
+        <h3 id="reel-modal-title" class="text-lg font-bold text-[#1d1b20] font-headline">Add Instagram Reel</h3>
+        <button id="close-reel-form-btn" class="text-[#79747e] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="reel-modal-form" class="space-y-4">
+        <input type="hidden" id="reel-id-input">
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Reel Title</label>
+          <input type="text" id="reel-title-input" required class="admin-input">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Instagram Reel URL</label>
+          <input type="url" id="reel-url-input" required class="admin-input">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Thumbnail Cover URL</label>
+          <input type="url" id="reel-thumb-input" required class="admin-input">
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Category</label>
+            <select id="reel-cat-input" class="admin-input">
+              <option value="Travel">Travel</option>
+              <option value="Food">Food</option>
+              <option value="Lifestyle">Lifestyle</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Duration</label>
+            <input type="text" id="reel-duration-input" class="admin-input" placeholder="0:35">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Likes Count</label>
+            <input type="number" id="reel-likes-input" class="admin-input" value="1500">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Location</label>
+          <input type="text" id="reel-location-input" class="admin-input">
+        </div>
+        <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('reel-form-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Reel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Team Form Modal -->
+  <div id="team-form-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box p-6 sm:p-8 space-y-5">
+      <div class="flex items-center justify-between border-b border-black/10 pb-4">
+        <h3 id="user-modal-title" class="text-lg font-bold text-[#1d1b20] font-headline">Add Admin Member</h3>
+        <button id="close-team-form-btn" class="text-[#79747e] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="team-modal-form" class="space-y-4">
+        <input type="hidden" id="user-id-input">
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Full Name</label>
+          <input type="text" id="user-name-input" required class="admin-input">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Email Address</label>
+          <input type="email" id="user-email-input" required class="admin-input">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Password</label>
+          <input type="password" id="user-pass-input" required class="admin-input">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Role</label>
+          <select id="user-role-select" class="admin-input">
+            <option value="OWNER">OWNER (Full Access)</option>
+            <option value="EDITOR">EDITOR (Videos, Articles, Destinations, Gallery, Reels)</option>
+            <option value="MANAGER">MANAGER (Content, Messages, Analytics)</option>
+            <option value="VIEWER">VIEWER (Analytics Read-Only)</option>
+          </select>
+        </div>
+        <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('team-form-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirm-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box max-w-sm p-6 space-y-4 text-center">
+      <div class="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto border border-red-200">
+        <span class="material-symbols-outlined text-[24px]">warning</span>
+      </div>
+      <div>
+        <h3 id="confirm-title" class="text-lg font-bold text-[#1d1b20] font-headline">Confirm Action</h3>
+        <p id="confirm-message" class="text-xs text-[#494551] font-light mt-1 whitespace-pre-wrap">Are you sure you want to perform this action?</p>
+      </div>
+      <div class="flex justify-center gap-3 pt-2">
+        <button id="confirm-cancel-btn" class="btn-secondary text-xs">Cancel</button>
+        <button id="confirm-action-btn" class="btn-danger text-xs">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Playable Video Preview Modal -->
+  <div id="admin-video-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box max-w-4xl p-0 overflow-hidden bg-black border border-purple-500/40">
+      <div class="flex items-center justify-between p-3 px-4 bg-[#fdf7ff] border-b border-black/10">
+        <span id="admin-video-preview-title" class="text-xs font-semibold text-[#4f378a]">Video Preview Player</span>
+        <button id="close-admin-video-btn" type="button" class="text-[#79747e] hover:text-[#4f378a] cursor-pointer">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="aspect-video w-full bg-black flex items-center justify-center relative">
+        <iframe id="admin-video-iframe" class="w-full h-full border-0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <video id="admin-video-player" class="w-full h-full object-contain hidden" controls autoplay></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../assets/js/db.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

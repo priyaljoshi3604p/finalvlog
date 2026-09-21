@@ -1,0 +1,294 @@
+/* ==========================================================================
+   VEYRA TRAILS - OWNER STUDIO DESIGN SYSTEM (admin.css)
+   Inheriting the EXACT Typography & Visual Identity of Veyra Trails
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Great+Vibes&family=Public+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Brand Color Tokens matching Public Website */
+  --primary: #4f378a;
+  --primary-container: #6750a4;
+  --on-primary: #ffffff;
+  --tertiary: #765b00;
+  --surface: #fdf7ff;
+  --on-surface: #1d1b20;
+  --on-surface-variant: #494551;
+  --outline: #7a7582;
+  --outline-variant: #cbc4d2;
+  
+  --bg-dark-studio: #0b0d12;
+  --bg-card: #191c2b;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+
+  --font-body: 'Public Sans', sans-serif;
+  --font-headline: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Global Typography - Inherited from Public Site */
+html, body, input, select, textarea, button, p, span, div, a {
+  font-family: 'Public Sans', sans-serif;
+}
+
+h1, h2, h3, h4, .font-headline {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+/* Material Symbols Outlined Glyph Rendering */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Base Body */
+body {
+  background-color: var(--surface) !important;
+  color: var(--on-surface) !important;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glass Panels & Editorial Cards */
+.admin-glass {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.admin-glass-hover {
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-glass-hover:hover {
+  border-color: var(--primary);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Header Navbar */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #ffffff;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Sidebar Navigation */
+.admin-sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid var(--border-subtle);
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  transition: transform 0.3s ease;
+}
+
+.admin-main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+  }
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  .admin-main {
+    margin-left: 0;
+  }
+}
+
+/* Sidebar Navigation Links matching Public Nav */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 9999px;
+  color: var(--on-surface-variant);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  color: var(--primary);
+  background: rgba(79, 55, 138, 0.08);
+}
+
+.nav-item.active {
+  color: var(--on-primary);
+  background: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(79, 55, 138, 0.3);
+}
+
+.nav-item .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+/* Form Controls & Inputs */
+.admin-input {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--outline-variant);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: var(--on-surface);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.admin-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 55, 138, 0.15);
+}
+
+/* Buttons System matching Public Website */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: none;
+  box-shadow: 0 4px 15px rgba(79, 55, 138, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-container);
+  box-shadow: 0 8px 25px rgba(79, 55, 138, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(79, 55, 138, 0.08);
+}
+
+/* Status Badges */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.badge-published, .badge-active, .badge-resolved, .badge-success {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-new, .badge-unread {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.badge-contacted, .badge-read {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.badge-draft {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.badge-role-owner {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+/* Modals */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(11, 13, 18, 0.75);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.admin-modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.admin-modal-box {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.5rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}

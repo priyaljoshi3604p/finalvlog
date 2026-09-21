@@ -1,0 +1,16 @@
+# Veyra Trails Robots Configuration
+# https://vloggerwebsite-iota.vercel.app/robots.txt
+
+User-agent: *
+Allow: /
+
+# Exclude Admin Portal and Private APIs
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /api/admin/
+Disallow: /api/admin/*
+Disallow: /uploads/videos/
+
+# Sitemap Location
+Sitemap: https://vloggerwebsite-iota.vercel.app/sitemap.xml

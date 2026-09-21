@@ -4,11 +4,16 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initVisitorTracking();
+  initVeyraDBSync();
+  initBackendAPISync();
+  loadPublicVideos();
   initThreeJSGlobe();
   init3DTiltCards();
   initHeroParallax();
   initHeaderScroll();
   initActiveNavSpy();
+  initCleanSectionRouting();
   initVlogFilters();
   initGalleryFilters();
   initArticleFilters();
@@ -20,6 +25,223 @@ document.addEventListener('DOMContentLoaded', () => {
   initFormHandlers();
   initMobileMenu();
 });
+
+function initCleanSectionRouting() {
+  try {
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+    const sectionRoutes = ['about', 'travel', 'food', 'vlogs', 'reels', 'gallery', 'articles', 'destinations', 'contact'];
+
+    if (sectionRoutes.includes(path)) {
+      const targetSection = document.getElementById(path);
+      if (targetSection) {
+        setTimeout(() => {
+          targetSection.scrollIntoView({ behavior: 'smooth' });
+        }, 200);
+      }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', () => {
+        const targetId = anchor.getAttribute('href').replace('#', '');
+        if (targetId && sectionRoutes.includes(targetId)) {
+          if (window.history && window.history.pushState) {
+            window.history.pushState(null, '', `/${targetId}`);
+          }
+        } else if (targetId === 'home') {
+          if (window.history && window.history.pushState) {
+            window.history.pushState(null, '', '/');
+          }
+        }
+      });
+    });
+
+    window.addEventListener('popstate', () => {
+      const currentPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
+      if (sectionRoutes.includes(currentPath)) {
+        const sec = document.getElementById(currentPath);
+        if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+      } else if (!currentPath) {
+        const homeSec = document.getElementById('home');
+        if (homeSec) homeSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  } catch (err) {
+    console.warn('Clean routing notice:', err);
+  }
+}
+
+
+function initVisitorTracking() {
+  try {
+    let sessionId = sessionStorage.getItem('veyra_session_id');
+    if (!sessionId) {
+      sessionId = 'sess_' + Math.random().toString(36).substring(2) + Date.now();
+      sessionStorage.setItem('veyra_session_id', sessionId);
+    }
+    fetch('/api/visitors/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        pageVisited: window.location.pathname + (window.location.hash || '#home'),
+        referrer: document.referrer || ''
+      })
+    }).catch(() => {});
+  } catch (err) {}
+}
+
+async function initBackendAPISync() {
+  try {
+    const res = await fetch('/api/public/settings');
+    const data = await res.json();
+    if (data.success && data.settings) {
+      const s = data.settings;
+      if (s.contactEmail) {
+        document.querySelectorAll('a[href^="mailto:"]').forEach(a => a.href = `mailto:${s.contactEmail}`);
+        document.querySelectorAll('.contact-email-text').forEach(el => el.textContent = s.contactEmail);
+      }
+      if (s.contactPhone) {
+        document.querySelectorAll('a[href^="tel:"]').forEach(a => a.href = `tel:${s.contactPhone.replace(/\s+/g, '')}`);
+        document.querySelectorAll('.contact-phone-text').forEach(el => el.textContent = s.contactPhone);
+      }
+      if (s.youtubeUrl) document.querySelectorAll('a[aria-label="YouTube"]').forEach(a => a.href = s.youtubeUrl);
+      if (s.instagramUrl) document.querySelectorAll('a[aria-label="Instagram"]').forEach(a => a.href = s.instagramUrl);
+      if (s.seoTitle) document.title = s.seoTitle;
+    }
+  } catch (err) {}
+}
+
+function initVeyraDBSync() {
+  if (!window.VeyraDB) return;
+  try {
+    const settings = window.VeyraDB.getSettings();
+    if (settings) {
+      // Brand Name & Tagline
+      const brandTitles = document.querySelectorAll('.font-headline.tracking-\\[0\\.25em\\]');
+      brandTitles.forEach(el => {
+        if (settings.websiteName) el.textContent = settings.websiteName;
+      });
+
+      const taglineEls = document.querySelectorAll('.text-\\[9px\\].tracking-\\[0\\.2em\\]');
+      taglineEls.forEach(el => {
+        if (settings.tagline) el.textContent = settings.tagline;
+      });
+
+      // Social Links
+      const ytLinks = document.querySelectorAll('a[aria-label="YouTube"]');
+      ytLinks.forEach(el => { if (settings.youtubeUrl) el.href = settings.youtubeUrl; });
+
+      const igLinks = document.querySelectorAll('a[aria-label="Instagram"]');
+      igLinks.forEach(el => { if (settings.instagramUrl) el.href = settings.instagramUrl; });
+
+      const emailLinks = document.querySelectorAll('a[aria-label="Email"]');
+      emailLinks.forEach(el => { if (settings.contactEmail) el.href = `mailto:${settings.contactEmail}`; });
+
+      // Dynamic SEO Title
+      if (settings.seoTitle) {
+        document.title = settings.seoTitle;
+      }
+    }
+
+    // Profile Sync
+    const profile = window.VeyraDB.getProfile();
+    if (profile) {
+      const bioEls = document.querySelectorAll('.vlogger-bio-text');
+      bioEls.forEach(el => { if (profile.bio) el.textContent = profile.bio; });
+
+      const nameEls = document.querySelectorAll('.vlogger-name-heading');
+      nameEls.forEach(el => { if (profile.vloggerName) el.textContent = profile.vloggerName; });
+
+      const imgEls = document.querySelectorAll('.vlogger-profile-img');
+      imgEls.forEach(el => { if (profile.profileImage) el.src = profile.profileImage; });
+    }
+
+    // Filter Published vs Unpublished Videos
+    const videos = window.VeyraDB.getAll('videos');
+    const vlogCards = document.querySelectorAll('.vlog-card-item');
+    vlogCards.forEach(card => {
+      const vId = card.getAttribute('data-video-id');
+      const item = videos.find(v => v.id === vId || v.youtubeUrl?.includes(vId));
+      if (item && item.published === false) {
+        card.style.display = 'none';
+      }
+    });
+
+    // Filter Published vs Unpublished Destinations
+    const destinations = window.VeyraDB.getAll('destinations');
+    const destCards = document.querySelectorAll('.destination-card-item, [data-destination-id]');
+    destCards.forEach(card => {
+      const dId = card.getAttribute('data-destination-id') || card.getAttribute('id');
+      const item = destinations.find(d => d.id === dId || d.name?.toLowerCase() === dId?.toLowerCase());
+      if (item && item.published === false) {
+        card.style.display = 'none';
+      }
+    });
+
+    // Sync Published vs Unpublished Articles
+    const articles = window.VeyraDB.getAll('articles');
+    const artCards = document.querySelectorAll('.article-card-item');
+    artCards.forEach(card => {
+      const aId = card.getAttribute('data-article-id');
+      const item = articles.find(a => a.id === aId);
+      if (item && (item.published === false || item.status === 'draft')) {
+        card.style.display = 'none';
+      }
+    });
+
+    // Render newly created articles dynamically
+    const articlesGrid = document.querySelector('#articles .grid');
+    if (articlesGrid) {
+      const publishedArticles = window.VeyraDB.getPublished('articles');
+      publishedArticles.forEach(art => {
+        const existing = articlesGrid.querySelector(`[data-article-id="${art.id}"]`);
+        if (!existing) {
+          const card = document.createElement('div');
+          card.className = 'article-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer border border-outline-variant/30';
+          card.setAttribute('data-article-id', art.id);
+          card.setAttribute('data-category', (art.category || 'travel').toLowerCase());
+          card.innerHTML = `
+            <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
+              <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" alt="${art.title}" src="${art.image}">
+              <span class="absolute top-4 left-4 px-3 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${art.category || 'Travel Guide'}</span>
+            </div>
+            <div class="p-6 flex flex-col justify-between flex-1 gap-4">
+              <div class="flex items-center justify-between text-[10px] tracking-[0.2em] uppercase text-outline font-medium">
+                <span>${art.date || 'Today'} • ${art.read_time || art.readTime || '5 min read'}</span>
+                <span class="text-primary font-semibold">By Veyra Trails</span>
+              </div>
+              <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
+                ${art.title}
+              </h3>
+              <p class="text-xs text-on-surface-variant font-light leading-relaxed line-clamp-3">
+                ${art.description}
+              </p>
+              <div class="read-article-btn inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase font-medium text-primary group-hover:text-primary-container transition-colors pt-2">
+                <span>Read Full Article</span>
+                <span class="material-symbols-outlined text-[16px]">menu_book</span>
+              </div>
+            </div>
+          `;
+          articlesGrid.appendChild(card);
+        }
+      });
+    }
+
+    // Filter Published vs Unpublished Reels
+    const reels = window.VeyraDB.getAll('reels');
+    const reelCards = document.querySelectorAll('.reel-card-item');
+    reelCards.forEach(card => {
+      const rId = card.getAttribute('data-reel-id');
+      const item = reels.find(r => r.id === rId);
+      if (item && item.published === false) {
+        card.style.display = 'none';
+      }
+    });
+
+  } catch (e) {
+    console.warn('VeyraDB sync notice:', e);
+  }
+}
 
 /* --------------------------------------------------------------------------
    1. THREE.JS 3D ROTATING GLOBE & AMBIENT CANVAS
@@ -314,49 +536,126 @@ function initGalleryFilters() {
   });
 }
 
+async function loadPublicVideos() {
+  const container = document.getElementById('public-vlogs-grid') || document.querySelector('#vlogs .grid');
+  if (!container) return;
+
+  try {
+    const res = await fetch('/api/public/videos');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.success || !data.videos || data.videos.length === 0) return;
+
+    const videos = data.videos;
+
+    // Update filter 'all' button label count
+    const allBtn = document.querySelector('.vlog-filter-btn[data-category="all"]');
+    if (allBtn) {
+      allBtn.textContent = `All (${videos.length})`;
+    }
+
+    container.innerHTML = videos.map((v, index) => {
+      let colSpan = 'md:col-span-6';
+      if (index === 0) colSpan = 'md:col-span-8';
+      else if (index === 1) colSpan = 'md:col-span-4';
+      else colSpan = 'md:col-span-6';
+
+      const catLower = (v.category || 'Travel').toLowerCase();
+      const thumb = v.thumbnail || 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
+      const isUploaded = v.platform === 'Uploaded' || v.video_url.startsWith('/uploads/');
+      const locationTag = v.destination ? v.destination : (v.category + ' Expedition');
+
+      return `
+        <div class="${colSpan} vlog-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer" 
+             data-category="${escapeHtml(catLower)}" 
+             data-video-id="${escapeHtml(v.id)}" 
+             data-video-url="${escapeHtml(v.video_url)}"
+             data-video-title="${escapeHtml(v.title)}" 
+             data-video-desc="${escapeHtml(v.description || '')}">
+          <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" 
+                 alt="${escapeHtml(v.title)}" 
+                 src="${escapeHtml(thumb)}">
+            <div class="absolute top-4 left-4 flex gap-2 z-10">
+              <span class="px-2.5 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${escapeHtml(v.category || 'Travel')}</span>
+              <span class="px-2.5 py-1 bg-black/60 text-[10px] tracking-[0.1em] font-mono text-white rounded">${escapeHtml(v.duration || '10:00')}</span>
+            </div>
+            <div class="absolute inset-0 flex items-center justify-center z-10">
+              <div data-video-url="${escapeHtml(v.video_url)}" data-video-id="${escapeHtml(v.id)}" class="play-btn-3d play-btn-trigger w-14 h-14 rounded-full bg-white/90 text-on-surface flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
+                <span class="material-symbols-outlined text-[28px] translate-x-0.5" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 flex flex-col justify-between flex-1 gap-4">
+            <div class="flex items-center justify-between text-[11px] tracking-[0.2em] uppercase text-on-surface-variant font-light">
+              <span>${escapeHtml(locationTag)}</span>
+              <span class="text-primary font-medium">${isUploaded ? 'Play Video ↗' : 'Play YouTube Video ↗'}</span>
+            </div>
+            <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
+              ${escapeHtml(v.title)}
+            </h3>
+            <p class="text-xs text-on-surface-variant font-light line-clamp-2">
+              ${escapeHtml(v.description || '')}
+            </p>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    if (typeof init3DTiltCards === 'function') {
+      init3DTiltCards();
+    }
+  } catch (err) {
+    console.warn('Failed to load public videos from API:', err);
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 /* --------------------------------------------------------------------------
-   6. YOUTUBE VIDEO LIGHTBOX MODAL (UNIVERSAL PLAY LISTENER)
-   -------------------------------------------------------------------------- */
-/* --------------------------------------------------------------------------
-   6. YOUTUBE VIDEO LIGHTBOX MODAL (UNIVERSAL PLAY LISTENER)
+   6. YOUTUBE & UPLOADED VIDEO LIGHTBOX MODAL (UNIVERSAL PLAY LISTENER)
    -------------------------------------------------------------------------- */
 function initVideoModal() {
   const modal = document.getElementById('video-modal');
   const iframe = document.getElementById('modal-video-iframe');
+  const videoPlayer = document.getElementById('modal-video-player');
   const closeBtn = document.getElementById('close-modal-btn');
   const closeFooterBtn = document.getElementById('close-modal-footer-btn');
   const titleEl = document.getElementById('modal-video-title');
   const descEl = document.getElementById('modal-video-desc');
   const ytLink = document.getElementById('modal-youtube-link');
 
-  if (!modal || !iframe) return;
+  if (!modal) return;
 
   const defaultVideoId = '5D3cZ-6tGkY';
 
   // Event Delegation for All Video Cards & Triggers Across the Website
   document.addEventListener('click', (e) => {
-    // 1. Find clicked element or parent card container
     const cardOrTrigger = e.target.closest('[data-video-id], [data-video-url], .play-btn-trigger, .vlog-card-item, .tilt-card');
     
     if (!cardOrTrigger) return;
 
-    // Avoid hijacking regular links unless it's a video play trigger
     if (e.target.closest('a') && !e.target.closest('[data-video-id], [data-video-url], .play-btn-trigger')) {
       return;
     }
 
-    // 2. Find closest element containing video attributes
     const dataHolder = e.target.closest('[data-video-id], [data-video-url]') || cardOrTrigger.querySelector('[data-video-id], [data-video-url]') || cardOrTrigger;
 
-    // Extract YouTube Video ID
+    const rawUrl = dataHolder.getAttribute('data-video-url') || '';
     let videoId = dataHolder.getAttribute('data-video-id');
-    if (!videoId) {
-      const rawUrl = dataHolder.getAttribute('data-video-url');
+    
+    if (!videoId && rawUrl) {
       videoId = extractYouTubeId(rawUrl);
     }
-    if (!videoId) videoId = defaultVideoId;
 
-    // Extract Destination / Video Title & Description
     let videoTitle = dataHolder.getAttribute('data-video-title') || cardOrTrigger.getAttribute('data-video-title');
     if (!videoTitle) {
       const heading = cardOrTrigger.querySelector('h3, h2, .font-headline');
@@ -372,14 +671,48 @@ function initVideoModal() {
     e.preventDefault();
     e.stopPropagation();
 
-    // Construct embed & watch URLs using standard embed endpoint
-    const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
-    const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const ytId = extractYouTubeId(rawUrl) || (videoId && videoId.length === 11 ? videoId : null);
+    const isUploadedFile = !ytId && (rawUrl.length > 0 || !videoId);
 
-    iframe.src = embedUrl;
+    if (isUploadedFile && videoPlayer) {
+      if (iframe) {
+        iframe.src = '';
+        iframe.classList.add('hidden');
+      }
+      videoPlayer.src = rawUrl;
+      videoPlayer.classList.remove('hidden');
+      videoPlayer.load();
+      videoPlayer.play().catch((err) => {
+        console.log('Video autoplay deferred by browser policy:', err);
+      });
+      if (ytLink) {
+        ytLink.href = rawUrl;
+        const textSpan = ytLink.querySelector('span');
+        if (textSpan) textSpan.textContent = 'Open Video File';
+      }
+    } else {
+      const embedId = ytId || defaultVideoId;
+      const embedUrl = `https://www.youtube.com/embed/${embedId}?autoplay=1&enablejsapi=1&rel=0`;
+      const watchUrl = `https://www.youtube.com/watch?v=${embedId}`;
+
+      if (videoPlayer) {
+        videoPlayer.pause();
+        videoPlayer.src = '';
+        videoPlayer.classList.add('hidden');
+      }
+      if (iframe) {
+        iframe.src = embedUrl;
+        iframe.classList.remove('hidden');
+      }
+      if (ytLink) {
+        ytLink.href = watchUrl;
+        const textSpan = ytLink.querySelector('span');
+        if (textSpan) textSpan.textContent = 'Watch on YouTube';
+      }
+    }
+
     if (titleEl) titleEl.textContent = videoTitle;
     if (descEl) descEl.textContent = videoDesc;
-    if (ytLink) ytLink.href = watchUrl;
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -387,7 +720,11 @@ function initVideoModal() {
 
   const closeModal = () => {
     modal.classList.remove('active');
-    iframe.src = '';
+    if (iframe) iframe.src = '';
+    if (videoPlayer) {
+      videoPlayer.pause();
+      videoPlayer.src = '';
+    }
     document.body.style.overflow = '';
   };
 
@@ -592,6 +929,30 @@ const destinationData = {
   }
 };
 
+function getActiveDestinationData() {
+  if (window.VeyraDB) {
+    const publishedDests = window.VeyraDB.getPublished('destinations');
+    if (publishedDests && publishedDests.length > 0) {
+      const map = {};
+      publishedDests.forEach(d => {
+        map[d.id] = {
+          name: d.name,
+          title: d.title || `${d.name}, ${d.country || ''}`,
+          tag: d.tag || d.shortDesc,
+          desc: d.longDesc || d.shortDesc,
+          food: d.food || 'Local authentic regional specialties',
+          places: d.places || 'Top heritage sights & nature trails',
+          exp: d.exp || 'Curated local experiences',
+          img: d.heroImage || d.img,
+          videoId: d.videoId || extractYouTubeId(d.videoUrl) || '5D3cZ-6tGkY'
+        };
+      });
+      return map;
+    }
+  }
+  return destinationData;
+}
+
 function initDestinationExplorer() {
   const destBtns = document.querySelectorAll('.dest-select-btn');
   if (!destBtns.length) return;
@@ -606,8 +967,9 @@ function initDestinationExplorer() {
       btn.classList.remove('bg-surface-container-highest', 'text-on-surface-variant');
       btn.classList.add('bg-primary', 'text-on-primary', 'font-semibold');
 
+      const activeMap = getActiveDestinationData();
       const key = btn.getAttribute('data-dest');
-      const data = destinationData[key] || destinationData['kerala'];
+      const data = activeMap[key] || Object.values(activeMap)[0] || destinationData['kerala'];
 
       const titleEl = document.getElementById('dest-display-title');
       const tagEl = document.getElementById('dest-display-tag');
@@ -677,10 +1039,26 @@ function initFormHandlers() {
   forms.forEach((form) => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      const nameInput = form.querySelector('input[name="name"], input[placeholder*="Name"], input[type="text"]');
       const emailInput = form.querySelector('input[type="email"]');
-      const email = emailInput ? emailInput.value : 'your email';
+      const msgInput = form.querySelector('textarea');
+      const subjectInput = form.querySelector('input[name="subject"], input[placeholder*="Subject"]');
 
-      showToast(`Thank you! Message sent to Veyra Trails for ${email}`);
+      const name = nameInput ? nameInput.value : 'Website Guest';
+      const email = emailInput ? emailInput.value : 'visitor@veyratrails.com';
+      const subject = subjectInput ? subjectInput.value : 'Public Website Contact Form';
+      const message = msgInput ? msgInput.value : 'Inquiry sent from Veyra Trails contact form.';
+
+      if (window.VeyraDB) {
+        window.VeyraDB.addMessage({
+          name: name,
+          email: email,
+          subject: subject,
+          message: message
+        });
+      }
+
+      showToast(`Thank you ${name}! Your message was sent to Veyra Trails.`);
       form.reset();
     });
   });
@@ -894,7 +1272,23 @@ function initArticleModal() {
     if (e.target.closest('[data-video-id], .play-btn-trigger')) return;
 
     const articleId = articleCard.getAttribute('data-article-id');
-    const data = articleData[articleId];
+    let data = articleData[articleId];
+
+    if (!data && window.VeyraDB) {
+      const dbArt = window.VeyraDB.getById('articles', articleId);
+      if (dbArt) {
+        data = {
+          title: dbArt.title,
+          category: dbArt.category || 'Travel Essay',
+          date: dbArt.date || 'Today',
+          readTime: dbArt.read_time || dbArt.readTime || '5 min read',
+          img: dbArt.image,
+          quote: dbArt.quote || '',
+          body: `<p class="font-headline text-lg text-amber-200 font-normal leading-relaxed">${dbArt.description}</p><div class="text-xs text-white/90 leading-relaxed font-light mt-4">${(dbArt.content || '').replace(/\n/g, '<br>')}</div>`
+        };
+      }
+    }
+
     if (!data) return;
 
     e.preventDefault();
@@ -957,3 +1351,75 @@ function initArticleModal() {
     if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
   });
 }
+
+function initFormHandlers() {
+  const form = document.getElementById('public-contact-form');
+  const statusMsg = document.getElementById('contact-status-msg');
+  const submitBtn = document.getElementById('contact-submit-btn');
+
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('contact-name')?.value?.trim();
+    const email = document.getElementById('contact-email')?.value?.trim();
+    const phone = document.getElementById('contact-phone')?.value?.trim() || '';
+    const subject = document.getElementById('contact-subject')?.value?.trim() || 'General Inquiry';
+    const message = document.getElementById('contact-message')?.value?.trim();
+
+    if (!name || !email || !message) {
+      if (statusMsg) {
+        statusMsg.className = 'text-xs py-3 px-4 rounded-lg font-medium bg-red-900/50 text-red-200 border border-red-500/30';
+        statusMsg.textContent = 'Please fill in all required fields (Name, Email, Message).';
+        statusMsg.classList.remove('hidden');
+      }
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.opacity = '0.7';
+      submitBtn.innerHTML = `<span>Sending...</span><span class="material-symbols-outlined text-[16px] animate-spin">sync</span>`;
+    }
+
+    try {
+      const response = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, subject, message })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        if (statusMsg) {
+          statusMsg.className = 'text-xs py-3 px-4 rounded-lg font-medium bg-emerald-900/60 text-emerald-200 border border-emerald-500/30';
+          statusMsg.textContent = result.message || 'Thank you! Your enquiry has been received.';
+          statusMsg.classList.remove('hidden');
+        }
+        form.reset();
+
+        // Save to local VeyraDB fallback too
+        if (window.VeyraDB && window.VeyraDB.addEnquiry) {
+          window.VeyraDB.addEnquiry({ name, email, phone, subject, message });
+        }
+      } else {
+        throw new Error(result.error || 'Failed to submit enquiry.');
+      }
+    } catch (err) {
+      if (statusMsg) {
+        statusMsg.className = 'text-xs py-3 px-4 rounded-lg font-medium bg-amber-900/60 text-amber-200 border border-amber-500/30';
+        statusMsg.textContent = err.message || 'Connecting to backend... Saved locally.';
+        statusMsg.classList.remove('hidden');
+      }
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.opacity = '1';
+        submitBtn.innerHTML = `<span>Send Message</span><span class="material-symbols-outlined text-[16px]">send</span>`;
+      }
+    }
+  });
+}
+
