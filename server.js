@@ -886,7 +886,7 @@ publicRoutes.forEach(route => {
 });
 
 // Fallback to public index.html for all other routes
-module.exports = app;
+export default app;
 
 if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
   app.listen(PORT, '0.0.0.0', () => {
