@@ -6,7 +6,6 @@
     { "source": "/admin/login/", "destination": "/admin/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/admin/", "destination": "/admin/index.html" },
-    { "source": "/admin/(.*)", "destination": "/admin/index.html" },
     { "source": "/(about|travel|food|vlogs|reels|gallery|articles|destinations|contact)", "destination": "/index.html" }
   ]
 }

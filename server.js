@@ -25,26 +25,34 @@ initDatabase();
 
 // Ensure upload directories exist
 const isVercelEnv = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
-const uploadsDir = isVercelEnv ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads');
-const videosDir = path.join(uploadsDir, 'videos');
-const thumbsDir = path.join(uploadsDir, 'thumbnails');
+const repoUploadsDir = path.join(__dirname, 'uploads');
+const tmpUploadsDir = path.join('/tmp', 'uploads');
 
-[uploadsDir, videosDir, thumbsDir].forEach(dir => {
+[repoUploadsDir, path.join(repoUploadsDir, 'videos'), path.join(repoUploadsDir, 'thumbnails')].forEach(dir => {
   if (!fs.existsSync(dir)) {
-    try {
-      fs.mkdirSync(dir, { recursive: true });
-    } catch (e) {}
+    try { fs.mkdirSync(dir, { recursive: true }); } catch (e) {}
   }
 });
+
+if (isVercelEnv) {
+  [tmpUploadsDir, path.join(tmpUploadsDir, 'videos'), path.join(tmpUploadsDir, 'thumbnails')].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) {}
+    }
+  });
+}
 
 // Configure Multer Storage for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (file.fieldname === 'video_file' || (file.mimetype && file.mimetype.startsWith('video/'))) {
-      cb(null, videosDir);
-    } else {
-      cb(null, thumbsDir);
+    const baseDir = isVercelEnv ? tmpUploadsDir : repoUploadsDir;
+    const targetDir = file.fieldname === 'video_file' || (file.mimetype && file.mimetype.startsWith('video/'))
+      ? path.join(baseDir, 'videos')
+      : path.join(baseDir, 'thumbnails');
+    if (!fs.existsSync(targetDir)) {
+      try { fs.mkdirSync(targetDir, { recursive: true }); } catch (e) {}
     }
+    cb(null, targetDir);
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname) || (file.fieldname === 'video_file' ? '.mp4' : '.jpg');
@@ -63,7 +71,10 @@ app.use(cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use(cookieParser());
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(repoUploadsDir));
+if (isVercelEnv) {
+  app.use('/uploads', express.static(tmpUploadsDir));
+}
 
 // Logger Helper
 function logActivity(action, entity, description) {
