@@ -466,73 +466,84 @@ async function loadPublicVideos() {
   const container = document.getElementById('public-vlogs-grid') || document.querySelector('#vlogs .grid');
   if (!container) return;
 
+  let videos = [];
   try {
     const res = await fetch('/api/public/videos');
-    if (!res.ok) return;
-    const data = await res.json();
-    if (!data.success || !data.videos || data.videos.length === 0) return;
-
-    const videos = data.videos;
-
-    // Update filter 'all' button label count
-    const allBtn = document.querySelector('.vlog-filter-btn[data-category="all"]');
-    if (allBtn) {
-      allBtn.textContent = `All (${videos.length})`;
-    }
-
-    container.innerHTML = videos.map((v, index) => {
-      let colSpan = 'md:col-span-6';
-      if (index === 0) colSpan = 'md:col-span-8';
-      else if (index === 1) colSpan = 'md:col-span-4';
-      else colSpan = 'md:col-span-6';
-
-      const catLower = (v.category || 'Travel').toLowerCase();
-      const thumb = v.thumbnail || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
-      const isUploaded = v.platform === 'Uploaded' || v.video_url.startsWith('/uploads/');
-      const locationTag = v.destination ? v.destination : (v.category + ' Expedition');
-
-      return `
-        <div class="${colSpan} vlog-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer" 
-             data-category="${escapeHtml(catLower)}" 
-             data-video-id="${escapeHtml(v.id)}" 
-             data-video-url="${escapeHtml(v.video_url)}"
-             data-video-title="${escapeHtml(v.title)}" 
-             data-video-desc="${escapeHtml(v.description || '')}">
-          <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" 
-                 alt="${escapeHtml(v.title)}" 
-                 src="${escapeHtml(thumb)}">
-            <div class="absolute top-4 left-4 flex gap-2 z-10">
-              <span class="px-2.5 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${escapeHtml(v.category || 'Travel')}</span>
-              <span class="px-2.5 py-1 bg-black/60 text-[10px] tracking-[0.1em] font-mono text-white rounded">${escapeHtml(v.duration || '10:00')}</span>
-            </div>
-            <div class="absolute inset-0 flex items-center justify-center z-10">
-              <div data-video-url="${escapeHtml(v.video_url)}" data-video-id="${escapeHtml(v.id)}" class="play-btn-3d play-btn-trigger w-14 h-14 rounded-full bg-white/90 text-on-surface flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
-                <span class="material-symbols-outlined text-[28px] translate-x-0.5" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-              </div>
-            </div>
-          </div>
-          <div class="p-6 flex flex-col justify-between flex-1 gap-4">
-            <div class="flex items-center justify-between text-[11px] tracking-[0.2em] uppercase text-on-surface-variant font-light">
-              <span>${escapeHtml(locationTag)}</span>
-              <span class="text-primary font-medium">${isUploaded ? 'Play Video ↗' : 'Play YouTube Video ↗'}</span>
-            </div>
-            <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
-              ${escapeHtml(v.title)}
-            </h3>
-            <p class="text-xs text-on-surface-variant font-light line-clamp-2">
-              ${escapeHtml(v.description || '')}
-            </p>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    if (typeof init3DTiltCards === 'function') {
-      init3DTiltCards();
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.videos && data.videos.length > 0) {
+        videos = data.videos;
+      }
     }
   } catch (err) {
     console.warn('Failed to load public videos from API:', err);
+  }
+
+  if (!videos || videos.length === 0) {
+    if (window.VeyraDB) {
+      videos = window.VeyraDB.getAll('videos') || [];
+    }
+  }
+
+  if (!videos || videos.length === 0) return;
+
+  // Update filter 'all' button label count
+  const allBtn = document.querySelector('.vlog-filter-btn[data-category="all"]');
+  if (allBtn) {
+    allBtn.textContent = `All (${videos.length})`;
+  }
+
+  container.innerHTML = videos.map((v, index) => {
+    let colSpan = 'md:col-span-6';
+    if (index === 0) colSpan = 'md:col-span-8';
+    else if (index === 1) colSpan = 'md:col-span-4';
+    else colSpan = 'md:col-span-6';
+
+    const catLower = (v.category || 'Travel').toLowerCase();
+    const thumb = v.thumbnail || 'https://img.youtube.com/vi/' + (v.id || '5D3cZ-6tGkY') + '/hqdefault.jpg';
+    const rawVideoUrl = v.video_url || v.youtubeUrl || ('https://www.youtube.com/embed/' + v.id);
+    const isUploaded = v.platform === 'Uploaded' || rawVideoUrl.startsWith('/uploads/');
+    const locationTag = v.destination ? v.destination : (v.category + ' Expedition');
+
+    return `
+      <div class="${colSpan} vlog-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer" 
+           data-category="${escapeHtml(catLower)}" 
+           data-video-id="${escapeHtml(v.id)}" 
+           data-video-url="${escapeHtml(rawVideoUrl)}"
+           data-video-title="${escapeHtml(v.title)}" 
+           data-video-desc="${escapeHtml(v.description || '')}">
+        <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" 
+               alt="${escapeHtml(v.title)}" 
+               src="${escapeHtml(thumb)}">
+          <div class="absolute top-4 left-4 flex gap-2 z-10">
+            <span class="px-2.5 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${escapeHtml(v.category || 'Travel')}</span>
+            <span class="px-2.5 py-1 bg-black/60 text-[10px] tracking-[0.1em] font-mono text-white rounded">${escapeHtml(v.duration || '10:00')}</span>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center z-10">
+            <div data-video-url="${escapeHtml(rawVideoUrl)}" data-video-id="${escapeHtml(v.id)}" class="play-btn-3d play-btn-trigger w-14 h-14 rounded-full bg-white/90 text-on-surface flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
+              <span class="material-symbols-outlined text-[28px] translate-x-0.5" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+            </div>
+          </div>
+        </div>
+        <div class="p-6 flex flex-col justify-between flex-1 gap-4">
+          <div class="flex items-center justify-between text-[11px] tracking-[0.2em] uppercase text-on-surface-variant font-light">
+            <span>${escapeHtml(locationTag)}</span>
+            <span class="text-primary font-medium">${isUploaded ? 'Play Video ↗' : 'Play YouTube Video ↗'}</span>
+          </div>
+          <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
+            ${escapeHtml(v.title)}
+          </h3>
+          <p class="text-xs text-on-surface-variant font-light line-clamp-2">
+            ${escapeHtml(v.description || '')}
+          </p>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (typeof init3DTiltCards === 'function') {
+    init3DTiltCards();
   }
 }
 
@@ -1261,64 +1272,76 @@ const articleData = {
 
 async function loadPublicArticles() {
   const container = document.getElementById('public-articles-grid') || document.querySelector('#articles .grid');
+  let articles = [];
+
   try {
     const res = await fetch('/api/public/articles');
-    if (!res.ok) return;
-    const data = await res.json();
-    if (!data.success || !data.articles || data.articles.length === 0) return;
-
-    const articles = data.articles;
-    window.fetchedArticles = articles;
-
-    articles.forEach(art => {
-      articleData[art.id] = {
-        title: art.title,
-        category: art.category || 'Travel',
-        date: art.date || 'Sept 2026',
-        readTime: art.read_time || '5 min read',
-        img: art.image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
-        quote: art.quote || `"${art.title}"`,
-        videoId: art.video_id || extractYouTubeId(art.video_id) || 'Z4yM3xERGvA',
-        body: art.content ? art.content.split('\n\n').map(p => `<p class="mb-4">${escapeHtml(p)}</p>`).join('') : `<p>${escapeHtml(art.description)}</p>`
-      };
-    });
-
-    if (container) {
-      container.innerHTML = articles.map(a => `
-        <div class="article-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer border border-outline-variant/30" 
-             data-article-id="${escapeHtml(a.id)}" 
-             data-category="${escapeHtml((a.category || 'Travel').toLowerCase())}">
-          <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" 
-                 alt="${escapeHtml(a.title)}" 
-                 src="${escapeHtml(a.image)}">
-            <span class="absolute top-4 left-4 px-3 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${escapeHtml(a.category || 'Travel')}</span>
-          </div>
-          <div class="p-6 flex flex-col justify-between flex-1 gap-4">
-            <div class="flex items-center justify-between text-[10px] tracking-[0.2em] uppercase text-outline font-medium">
-              <span>${escapeHtml(a.date || 'Sept 2026')} • ${escapeHtml(a.read_time || '5 min read')}</span>
-              <span class="text-primary font-semibold">By Veyra Trails</span>
-            </div>
-            <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
-              ${escapeHtml(a.title)}
-            </h3>
-            <p class="text-xs text-on-surface-variant font-light leading-relaxed line-clamp-3">
-              ${escapeHtml(a.description)}
-            </p>
-            <div class="read-article-btn inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase font-medium text-primary group-hover:text-primary-container transition-colors pt-2">
-              <span>Read Full Article</span>
-              <span class="material-symbols-outlined text-[16px]">menu_book</span>
-            </div>
-          </div>
-        </div>
-      `).join('');
-
-      if (typeof init3DTiltCards === 'function') {
-        init3DTiltCards();
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.articles && data.articles.length > 0) {
+        articles = data.articles;
       }
     }
   } catch (err) {
     console.warn('Failed to load public articles from API:', err);
+  }
+
+  if (!articles || articles.length === 0) {
+    if (window.VeyraDB) {
+      articles = window.VeyraDB.getAll('articles') || [];
+    }
+  }
+
+  if (!articles || articles.length === 0) return;
+
+  window.fetchedArticles = articles;
+
+  articles.forEach(art => {
+    articleData[art.id] = {
+      title: art.title,
+      category: art.category || 'Travel',
+      date: art.date || 'Sept 2026',
+      readTime: art.read_time || art.readTime || '5 min read',
+      img: art.image || art.img || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+      quote: art.quote || `"${art.title}"`,
+      videoId: art.video_id || art.videoId || extractYouTubeId(art.video_id) || 'Z4yM3xERGvA',
+      body: art.content ? art.content.split('\n\n').map(p => `<p class="mb-4">${escapeHtml(p)}</p>`).join('') : (art.body || `<p>${escapeHtml(art.description)}</p>`)
+    };
+  });
+
+  if (container) {
+    container.innerHTML = articles.map(a => `
+      <div class="article-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer border border-outline-variant/30" 
+           data-article-id="${escapeHtml(a.id)}" 
+           data-category="${escapeHtml((a.category || 'Travel').toLowerCase())}">
+        <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" 
+               alt="${escapeHtml(a.title)}" 
+               src="${escapeHtml(a.image || a.img)}">
+          <span class="absolute top-4 left-4 px-3 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${escapeHtml(a.category || 'Travel')}</span>
+        </div>
+        <div class="p-6 flex flex-col justify-between flex-1 gap-4">
+          <div class="flex items-center justify-between text-[10px] tracking-[0.2em] uppercase text-outline font-medium">
+            <span>${escapeHtml(a.date || 'Sept 2026')} • ${escapeHtml(a.read_time || a.readTime || '5 min read')}</span>
+            <span class="text-primary font-semibold">By Veyra Trails</span>
+          </div>
+          <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
+            ${escapeHtml(a.title)}
+          </h3>
+          <p class="text-xs text-on-surface-variant font-light leading-relaxed line-clamp-3">
+            ${escapeHtml(a.description || a.shortDesc || '')}
+          </p>
+          <div class="read-article-btn inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase font-medium text-primary group-hover:text-primary-container transition-colors pt-2">
+            <span>Read Full Article</span>
+            <span class="material-symbols-outlined text-[16px]">menu_book</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    if (typeof init3DTiltCards === 'function') {
+      init3DTiltCards();
+    }
   }
 }
 
