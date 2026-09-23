@@ -891,6 +891,9 @@ app.get('/admin/*splat', (req, res) => {
 
 // Fallback to public index.html for all other routes
 app.get('/*splat', (req, res) => {
+  if (req.params && req.params.splat && req.params.splat.includes('.')) {
+    return res.status(404).send('Not found');
+  }
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

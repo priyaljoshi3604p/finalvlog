@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initVeyraDBSync();
   initBackendAPISync();
   loadPublicVideos();
+  loadPublicArticles();
   initThreeJSGlobe();
   init3DTiltCards();
   initHeroParallax();
@@ -555,6 +556,11 @@ function initVideoModal() {
 
   // Event Delegation for All Video Cards & Triggers Across the Website
   document.addEventListener('click', (e) => {
+    // Ignore article clicks so initArticleModal can open articles
+    if (e.target.closest('.article-card-item, [data-article-id]') && !e.target.closest('.play-btn-trigger, [data-video-id]')) {
+      return;
+    }
+
     const cardOrTrigger = e.target.closest('[data-video-id], [data-video-url], .play-btn-trigger, .vlog-card-item, .tilt-card');
     
     if (!cardOrTrigger) return;
@@ -587,8 +593,8 @@ function initVideoModal() {
     e.preventDefault();
     e.stopPropagation();
 
-    const ytId = extractYouTubeId(rawUrl) || (videoId && videoId.length === 11 ? videoId : null);
-    const isUploadedFile = !ytId && (rawUrl.length > 0 || !videoId);
+    const ytId = extractYouTubeId(rawUrl) || extractYouTubeId(videoId) || (videoId && videoId.length === 11 ? videoId : defaultVideoId);
+    const isUploadedFile = !ytId && rawUrl.length > 0 && (rawUrl.startsWith('/uploads/') || rawUrl.match(/\.(mp4|webm|mov)(\?.*)?$/i));
 
     if (isUploadedFile && videoPlayer) {
       if (iframe) {
@@ -658,7 +664,9 @@ function initVideoModal() {
 
 function extractYouTubeId(url) {
   if (!url) return null;
-  const match = url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+  const str = String(url).trim();
+  if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+  const match = str.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/)([a-zA-Z0-9_-]{11})/);
   return match ? match[1] : null;
 }
 
@@ -1215,6 +1223,69 @@ const articleData = {
   }
 };
 
+async function loadPublicArticles() {
+  const container = document.getElementById('public-articles-grid') || document.querySelector('#articles .grid');
+  try {
+    const res = await fetch('/api/public/articles');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.success || !data.articles || data.articles.length === 0) return;
+
+    const articles = data.articles;
+    window.fetchedArticles = articles;
+
+    articles.forEach(art => {
+      articleData[art.id] = {
+        title: art.title,
+        category: art.category || 'Travel',
+        date: art.date || 'Sept 2026',
+        readTime: art.read_time || '5 min read',
+        img: art.image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+        quote: art.quote || `"${art.title}"`,
+        videoId: art.video_id || extractYouTubeId(art.video_id) || 'Z4yM3xERGvA',
+        body: art.content ? art.content.split('\n\n').map(p => `<p class="mb-4">${escapeHtml(p)}</p>`).join('') : `<p>${escapeHtml(art.description)}</p>`
+      };
+    });
+
+    if (container) {
+      container.innerHTML = articles.map(a => `
+        <div class="article-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer border border-outline-variant/30" 
+             data-article-id="${escapeHtml(a.id)}" 
+             data-category="${escapeHtml((a.category || 'Travel').toLowerCase())}">
+          <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" 
+                 alt="${escapeHtml(a.title)}" 
+                 src="${escapeHtml(a.image)}">
+            <span class="absolute top-4 left-4 px-3 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${escapeHtml(a.category || 'Travel')}</span>
+          </div>
+          <div class="p-6 flex flex-col justify-between flex-1 gap-4">
+            <div class="flex items-center justify-between text-[10px] tracking-[0.2em] uppercase text-outline font-medium">
+              <span>${escapeHtml(a.date || 'Sept 2026')} • ${escapeHtml(a.read_time || '5 min read')}</span>
+              <span class="text-primary font-semibold">By Veyra Trails</span>
+            </div>
+            <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
+              ${escapeHtml(a.title)}
+            </h3>
+            <p class="text-xs text-on-surface-variant font-light leading-relaxed line-clamp-3">
+              ${escapeHtml(a.description)}
+            </p>
+            <div class="read-article-btn inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase font-medium text-primary group-hover:text-primary-container transition-colors pt-2">
+              <span>Read Full Article</span>
+              <span class="material-symbols-outlined text-[16px]">menu_book</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      if (typeof init3DTiltCards === 'function') {
+        init3DTiltCards();
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to load public articles from API:', err);
+  }
+}
+
 function initArticleModal() {
   const modal = document.getElementById('article-modal');
   const closeBtn = document.getElementById('close-article-modal-btn');
@@ -1236,13 +1307,31 @@ function initArticleModal() {
     if (!articleCard) return;
 
     // Ignore clicks if user clicked video play button directly
-    if (e.target.closest('[data-video-id], .play-btn-trigger')) return;
+    if (e.target.closest('.play-btn-trigger') && !e.target.closest('.read-article-btn')) return;
 
     const articleId = articleCard.getAttribute('data-article-id');
-    const data = articleData[articleId];
+    let data = articleData[articleId];
+
+    if (!data && window.fetchedArticles) {
+      const artObj = window.fetchedArticles.find(a => a.id === articleId);
+      if (artObj) {
+        data = {
+          title: artObj.title,
+          category: artObj.category || 'Travel',
+          date: artObj.date || 'Sept 2026',
+          readTime: artObj.read_time || '5 min read',
+          img: artObj.image,
+          quote: artObj.quote || `"${artObj.title}"`,
+          videoId: artObj.video_id || 'Z4yM3xERGvA',
+          body: artObj.content ? artObj.content.replace(/\n\n/g, '</p><p class="mt-4">').replace(/\n/g, '<br>') : artObj.description
+        };
+      }
+    }
+
     if (!data) return;
 
     e.preventDefault();
+    e.stopPropagation();
 
     if (titleEl) titleEl.textContent = data.title;
     if (catEl) catEl.textContent = data.category;
@@ -1253,7 +1342,8 @@ function initArticleModal() {
     if (quoteEl) quoteEl.textContent = data.quote;
 
     if (videoCta) {
-      videoCta.setAttribute('data-video-id', data.videoId);
+      const vId = extractYouTubeId(data.videoId) || data.videoId || 'Z4yM3xERGvA';
+      videoCta.setAttribute('data-video-id', vId);
       videoCta.setAttribute('data-video-title', `${data.title} — Travel Film`);
     }
 
@@ -1264,8 +1354,9 @@ function initArticleModal() {
   // Handle Video CTA click inside article modal
   if (videoCta) {
     videoCta.addEventListener('click', () => {
-      const vId = videoCta.getAttribute('data-video-id') || '5D3cZ-6tGkY';
+      const rawVId = videoCta.getAttribute('data-video-id') || 'Z4yM3xERGvA';
       const vTitle = videoCta.getAttribute('data-video-title') || 'Veyra Trails Travel Vlog';
+      const embedId = extractYouTubeId(rawVId) || rawVId;
 
       // Close article modal
       modal.classList.remove('active');
@@ -1277,9 +1368,9 @@ function initArticleModal() {
       const ytLink = document.getElementById('modal-youtube-link');
 
       if (videoModal && iframe) {
-        iframe.src = `https://www.youtube.com/embed/${vId}?autoplay=1&enablejsapi=1&rel=0`;
+        iframe.src = `https://www.youtube.com/embed/${embedId}?autoplay=1&enablejsapi=1&rel=0`;
         if (videoTitleEl) videoTitleEl.textContent = vTitle;
-        if (ytLink) ytLink.href = `https://www.youtube.com/watch?v=${vId}`;
+        if (ytLink) ytLink.href = `https://www.youtube.com/watch?v=${embedId}`;
         videoModal.classList.add('active');
         document.body.style.overflow = 'hidden';
       }
