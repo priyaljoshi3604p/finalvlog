@@ -666,7 +666,7 @@ function extractYouTubeId(url) {
   if (!url) return null;
   const str = String(url).trim();
   if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
-  const match = str.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+  const match = str.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/|\/)([a-zA-Z0-9_-]{11})/);
   return match ? match[1] : null;
 }
 
@@ -1309,11 +1309,22 @@ function initArticleModal() {
     // Ignore clicks if user clicked video play button directly
     if (e.target.closest('.play-btn-trigger') && !e.target.closest('.read-article-btn')) return;
 
-    const articleId = articleCard.getAttribute('data-article-id');
+    let articleId = articleCard.getAttribute('data-article-id');
+    if (!articleId) {
+      const heading = articleCard.querySelector('h3, h2');
+      if (heading) {
+        const text = heading.textContent.trim().toLowerCase();
+        if (text.includes('munnar')) articleId = 'munnar-fog';
+        else if (text.includes('sadya') || text.includes('feast')) articleId = 'kerala-sadya';
+        else if (text.includes('ramen') || text.includes('tokyo')) articleId = 'tokyo-ramen';
+        else if (text.includes('dubai') || text.includes('desert')) articleId = 'dubai-desert';
+      }
+    }
+
     let data = articleData[articleId];
 
     if (!data && window.fetchedArticles) {
-      const artObj = window.fetchedArticles.find(a => a.id === articleId);
+      const artObj = window.fetchedArticles.find(a => a.id === articleId || a.title?.toLowerCase().includes(articleId));
       if (artObj) {
         data = {
           title: artObj.title,
@@ -1324,6 +1335,25 @@ function initArticleModal() {
           quote: artObj.quote || `"${artObj.title}"`,
           videoId: artObj.video_id || 'Z4yM3xERGvA',
           body: artObj.content ? artObj.content.replace(/\n\n/g, '</p><p class="mt-4">').replace(/\n/g, '<br>') : artObj.description
+        };
+      }
+    }
+
+    if (!data) {
+      // General fallback if still missing
+      const heading = articleCard.querySelector('h3, h2');
+      const desc = articleCard.querySelector('p');
+      const img = articleCard.querySelector('img');
+      if (heading) {
+        data = {
+          title: heading.textContent.trim(),
+          category: 'Travel Journal',
+          date: 'Sept 2026',
+          readTime: '5 min read',
+          img: img ? img.src : '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+          quote: `"${heading.textContent.trim()}"`,
+          videoId: 'Z4yM3xERGvA',
+          body: `<p class="font-headline text-lg text-amber-200">${heading.textContent.trim()}</p><p class="mt-4">${desc ? desc.textContent.trim() : 'Explore authentic travel stories, regional gastronomy, and landscapes with Veyra Trails.'}</p>`
         };
       }
     }
