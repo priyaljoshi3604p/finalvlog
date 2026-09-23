@@ -836,8 +836,9 @@ app.get('/api/admin/activity', requireAuth, (req, res) => {
    STATIC FILES & ROUTING
    ========================================================================== */
 
-// Serve static assets from project root
+// Serve static assets from project root & admin directory
 app.use(express.static(__dirname));
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
 // Route /admin and /admin/* to admin/index.html
 app.get('/admin', (req, res) => {
@@ -845,6 +846,9 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/admin/*splat', (req, res) => {
+  if (req.params && req.params.splat && req.params.splat.includes('.')) {
+    return res.status(404).send('Not found');
+  }
   res.sendFile(path.join(__dirname, 'admin', 'index.html'));
 });
 
