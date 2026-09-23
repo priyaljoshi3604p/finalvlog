@@ -213,7 +213,7 @@ app.post('/api/visitors/track', (req, res) => {
 });
 
 // 3. Public Content Endpoints
-app.get('/api/public/videos', (req, res) => {
+app.get(['/api/public/videos', '/public/videos'], (req, res) => {
   try {
     const videos = db.prepare(`SELECT * FROM video WHERE status = 'active' ORDER BY featured DESC, created_at DESC`).all();
     res.json({ success: true, videos });
@@ -222,7 +222,7 @@ app.get('/api/public/videos', (req, res) => {
   }
 });
 
-app.get('/api/public/destinations', (req, res) => {
+app.get(['/api/public/destinations', '/public/destinations'], (req, res) => {
   try {
     const destinations = db.prepare(`SELECT * FROM destination WHERE status = 'active' ORDER BY created_at DESC`).all();
     res.json({ success: true, destinations });
@@ -231,7 +231,7 @@ app.get('/api/public/destinations', (req, res) => {
   }
 });
 
-app.get('/api/public/articles', (req, res) => {
+app.get(['/api/public/articles', '/public/articles'], (req, res) => {
   try {
     const articles = db.prepare(`SELECT * FROM article WHERE status = 'published' ORDER BY created_at DESC`).all();
     res.json({ success: true, articles });
@@ -240,7 +240,7 @@ app.get('/api/public/articles', (req, res) => {
   }
 });
 
-app.get('/api/public/settings', (req, res) => {
+app.get(['/api/public/settings', '/public/settings'], (req, res) => {
   try {
     const rows = db.prepare(`SELECT key, value FROM settings`).all();
     const settings = {};
