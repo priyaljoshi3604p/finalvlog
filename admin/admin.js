@@ -991,7 +991,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="flex items-center gap-4">
             <img src="${a.image}" class="w-16 h-16 rounded-xl object-cover shrink-0 border border-black/10" alt="${escapeHtml(a.title)}">
             <div>
-              <span class="text-[10px] uppercase font-bold text-[#765b00]">${escapeHtml(a.category || 'Travel Essay')} • ${escapeHtml(a.date || 'Sept 2026')}</span>
+              <span class="text-[10px] uppercase font-bold text-[#765b00]">${escapeHtml(a.category || 'Travel')} • ${escapeHtml(a.date || 'Sept 2026')}</span>
               <h4 class="text-sm font-bold text-[#1d1b20] leading-tight mt-0.5">${escapeHtml(a.title)}</h4>
               <p class="text-xs text-[#494551] font-light line-clamp-1 mt-1">${escapeHtml(a.description)}</p>
             </div>
@@ -1007,40 +1007,117 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
       `).join('');
+
+      const addBtn = document.getElementById('add-article-btn');
+      if (addBtn && !addBtn.dataset.bound) {
+        addBtn.dataset.bound = 'true';
+        addBtn.addEventListener('click', () => openArticleModal());
+      }
     } catch (err) {
       container.innerHTML = `<div class="p-8 text-center text-xs text-red-500">Failed to load articles.</div>`;
     }
   }
 
-  window.editArticle = function(id) {
-    const a = currentArticles.find(item => item.id === id);
-    if (!a) return;
-    const title = prompt('Edit Article Title:', a.title);
-    if (title === null) return;
-    const desc = prompt('Edit Description:', a.description);
-    if (desc === null) return;
+  function openArticleModal(art = null) {
+    const modal = document.getElementById('article-form-modal');
+    if (!modal) return;
 
-    fetch(`/api/admin/articles/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...a, title, description: desc })
-    }).then(res => res.json()).then(data => {
-      if (data.success) {
-        showToast('Blog post updated', 'success');
-        renderArticles();
+    const titleEl = document.getElementById('article-modal-title');
+    if (titleEl) titleEl.textContent = art ? 'Edit Blog Post' : 'Write Blog Post';
+
+    document.getElementById('article-id-input').value = art ? art.id : '';
+    document.getElementById('article-title-input').value = art ? art.title : '';
+    document.getElementById('article-cat-input').value = art ? art.category : 'Travel';
+    document.getElementById('article-date-input').value = art ? art.date : 'Sept 2026';
+    document.getElementById('article-thumb-input').value = art ? art.image : '';
+    document.getElementById('article-shortdesc-input').value = art ? art.description : '';
+    document.getElementById('article-content-input').value = art ? art.content : '';
+    document.getElementById('article-dest-input').value = art ? (art.destination || '') : '';
+    document.getElementById('article-youtube-input').value = art ? (art.video_id || '') : '';
+    document.getElementById('article-quote-input').value = art ? (art.quote || '') : '';
+    document.getElementById('article-published-input').checked = art ? (art.status === 'published') : true;
+
+    modal.classList.add('active');
+  }
+
+  const articleForm = document.getElementById('article-modal-form');
+  if (articleForm) {
+    articleForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('save-article-submit-btn');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[16px] align-middle mr-1">sync</span>Saving...`;
+      }
+
+      const id = document.getElementById('article-id-input').value;
+      const title = document.getElementById('article-title-input').value.trim();
+      const category = document.getElementById('article-cat-input').value.trim();
+      const date = document.getElementById('article-date-input').value.trim() || 'Sept 2026';
+      const image = document.getElementById('article-thumb-input').value.trim();
+      const description = document.getElementById('article-shortdesc-input').value.trim();
+      const content = document.getElementById('article-content-input').value.trim();
+      const video_id = document.getElementById('article-youtube-input').value.trim();
+      const quote = document.getElementById('article-quote-input').value.trim();
+      const status = document.getElementById('article-published-input').checked ? 'published' : 'draft';
+
+      const payload = { id, title, category, date, image, description, content, video_id, quote, status };
+
+      try {
+        let res;
+        if (id) {
+          res = await fetch(`/api/admin/articles/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          res = await fetch('/api/admin/articles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast(id ? 'Article updated successfully!' : 'Article published to website!', 'success');
+          document.getElementById('article-form-modal').classList.remove('active');
+          renderArticles();
+          renderDashboard();
+        } else {
+          showToast(data.error || 'Failed to save article', 'error');
+        }
+      } catch (err) {
+        showToast('Error saving article.', 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Save Article';
+        }
       }
     });
+  }
+
+  window.editArticle = function(id) {
+    const a = currentArticles.find(item => item.id === id);
+    if (a) openArticleModal(a);
   };
 
   window.deleteArticle = function(id) {
-    openConfirmModal('Delete Article', `Delete blog post ${id}?`, 'Delete', async () => {
+    openConfirmModal('Delete Article', `Are you sure you want to delete blog post "${id}" from the database?`, 'Delete', async () => {
       try {
         const res = await fetch(`/api/admin/articles/${id}`, { method: 'DELETE' });
-        if (res.ok) {
+        const data = await res.json();
+        if (res.ok && data.success) {
           showToast('Blog post deleted', 'info');
           renderArticles();
+          renderDashboard();
+        } else {
+          showToast(data.error || 'Failed to delete article', 'error');
         }
-      } catch (err) {}
+      } catch (err) {
+        showToast('Error deleting article.', 'error');
+      }
     });
   };
 

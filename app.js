@@ -700,17 +700,6 @@ function initGalleryLightbox() {
    8. INTERACTIVE DESTINATION EXPLORER
    -------------------------------------------------------------------------- */
 const destinationData = {
-  kerala: {
-    name: 'Kerala',
-    title: 'Kerala, India',
-    tag: 'Tropical Backwaters & Mist-Veiled Tea Peaks',
-    desc: 'Known as God\'s Own Country, Kerala blends lush palm-lined backwaters, coconut groves, and high-altitude cardamom tea estates of Munnar.',
-    food: 'Traditional Kerala Sadya, Karimeen Pollichathu, Woodfire Cardamom Chai',
-    places: 'Munnar Tea Trails, Alleppey Houseboat Canals, Fort Kochi Spice Streets',
-    exp: 'Overnight Houseboat Drift, Sunrise Cloud Inversion Trek, Spice Plantation Walk',
-    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
-    videoId: '5D3cZ-6tGkY'
-  },
   munnar: {
     name: 'Munnar',
     title: 'Munnar — The Misty Hills of Kerala',
@@ -720,18 +709,62 @@ const destinationData = {
     places: 'Tea Museum, Eravikulam National Park, Mattupetty Dam, Echo Point, Top Station, Anayirangal',
     exp: 'Sunrise Tea Garden Walk, Neelakurinji Flower Trails, Forest & Waterfall Hikes',
     img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
-    videoId: 'okQ2Wr6GPXg'
+    videoId: 'Z4yM3xERGvA'
   },
   goa: {
     name: 'Goa',
-    title: 'Goa, India',
+    title: 'Goa — Beaches, Culture & Coastal Adventures',
     tag: 'Portuguese Heritage Architecture & Coastal Sunset Trails',
-    desc: 'Beyond the golden sands lies Old Goa\'s Latin quarters, vibrant night spice markets, and serene riverine estuaries.',
+    desc: 'Goa is known for its beautiful coastline, beaches, Portuguese-influenced architecture, local food and relaxed atmosphere.',
     food: 'Goan Fish Curry Rice, Pork Vindaloo, Bebinca Dessert',
     places: 'Fontainhas Heritage Quarter, Palolem Cliff Trails, Anjuna Flea Market',
     exp: 'Sunrise Paddleboarding, Colonial House Architectural Tour, Coastal Spice Tasting',
-    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuA6oEBZ-KDnA9Dn3UWuBTH6PgoCxA2ZpWU1tTUdl7GcmuCaX6VLCh7IurnRGygSmWUXU9Flj8R_sCSQDQOyzheJX9t8ZajW-8cbc062d633ca04a5ae2a806a5947184',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuDTKlMUVJs5CW0qdr0i4g1b8GxNa705yFpSLaVwNe1vphO1xjqEymsWXsDYG-zbW184S4zI7doawe8-WynyRxFvtGvjLPsb-994da734d2052fe1ff35994a9d8d6a4b',
     videoId: 'z_8Gzjx3s_Q'
+  },
+  kerala: {
+    name: 'Kerala',
+    title: 'Kerala Sadya & Backwater Serenity',
+    tag: 'Tropical Backwaters & Traditional Sadya Feast',
+    desc: 'Known as God\'s Own Country, Kerala blends lush palm-lined backwaters, coconut groves, and traditional banana leaf Sadya feasts.',
+    food: 'Traditional Kerala Sadya, Karimeen Pollichathu, Woodfire Cardamom Chai',
+    places: 'Munnar Tea Trails, Alleppey Houseboat Canals, Fort Kochi Spice Streets',
+    exp: 'Overnight Houseboat Drift, Sunrise Cloud Inversion Trek, Spice Plantation Walk',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+    videoId: '9NH5EfKGqgQ'
+  },
+  wayanad: {
+    name: 'Wayanad',
+    title: 'Wayanad — Rainforests & Ancient Caves',
+    tag: 'Lush Spice Plantations & Mist-Clad Valleys',
+    desc: 'Wayanad captivates travellers with dense mist-clad forests, ancient Edakkal caves, spice plantations and scenic mountain lakes.',
+    food: 'Bamboo Rice Payasam, Malabar Parotta with Pepper Chicken, Herbal Spiced Teas',
+    places: 'Edakkal Caves, Chembra Peak, Banasura Sagar Dam, Kuruva Island',
+    exp: 'Spice Plantation Walk, Heart Lake Trek, Rainforest Zip Lining',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+    videoId: 'Pj15eX2yL-0'
+  },
+  alleppey: {
+    name: 'Alleppey',
+    title: 'Alleppey — Venice of the East',
+    tag: 'Emerald Backwater Lagoons & Houseboats',
+    desc: 'Alleppey is world-renowned for its tranquil backwaters, traditional Kettuvallam houseboats, coconut palm fringes and paddy fields.',
+    food: 'Karimeen Pollichathu, Toddy Shop Fish Curry, Puttu & Kadala Curry',
+    places: 'Vembanad Lake, Punnamada Kayal, Alleppey Beach, Marari Beach',
+    exp: 'Overnight Houseboat Cruise, Village Canoe Tour, Sunset Lake Kayaking',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCGpMrj02jB5oZ8woDp1pDG1KYzKZnUksg0jPmxZAg-ZuhekRvLjZ_ySpK9Y067sfnHkzNkdg3qJPv4bnRFf-zicUpB8_pj-7a11c56d8eaa116b93cd26d5efbf5e9f',
+    videoId: 'MhLpHW_0KBA'
+  },
+  kochi: {
+    name: 'Kochi',
+    title: 'Kochi — Queen of the Arabian Sea',
+    tag: 'Historic Port City & Culinary Crossroads',
+    desc: 'Fort Kochi blends Chinese fishing nets, Portuguese churches, Dutch heritage palaces, and modern art spaces in a vibrant coastal setting.',
+    food: 'Kerala Sadya, Fort Kochi Seafood Fry, Sulaimani Tea, Mattancherry Sweets',
+    places: 'Chinese Fishing Nets, St. Francis Church, Mattancherry Palace, Jew Town',
+    exp: 'Sunset Promenade Walk, Heritage Bike Tour, Spice Market Exploration',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    videoId: 'okQ2Wr6GPXg'
   },
   rajasthan: {
     name: 'Rajasthan',
@@ -1340,4 +1373,61 @@ function initFormHandlers() {
     }
   });
 }
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE MOBILE NAVBAR & DRAWER CONTROLLER
+   -------------------------------------------------------------------------- */
+function initMobileMenu() {
+  const toggleBtn = document.getElementById('mobile-menu-toggle');
+  const closeBtn = document.getElementById('close-mobile-menu-btn');
+  const drawer = document.getElementById('mobile-menu-drawer');
+  const icon = document.getElementById('mobile-hamburger-icon');
+
+  if (!drawer) return;
+
+  const openDrawer = () => {
+    drawer.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    if (icon) icon.textContent = 'close';
+  };
+
+  const closeDrawer = () => {
+    drawer.classList.add('hidden');
+    document.body.style.overflow = '';
+    if (icon) icon.textContent = 'menu';
+  };
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (drawer.classList.contains('hidden')) {
+        openDrawer();
+      } else {
+        closeDrawer();
+      }
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeDrawer();
+    });
+  }
+
+  // Close menu automatically on any navigation link click inside drawer
+  drawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      closeDrawer();
+    });
+  });
+
+  // ESC key to close mobile drawer
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !drawer.classList.contains('hidden')) {
+      closeDrawer();
+    }
+  });
+}
+
 

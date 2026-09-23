@@ -120,18 +120,17 @@
         </a>
       </div>
 
-      <nav class="hidden xl:flex items-center gap-7 text-[11px] tracking-[0.2em] uppercase">
+      <nav class="hidden xl:flex items-center gap-6 text-[11px] tracking-[0.2em] uppercase">
         <a class="transition-colors py-2 text-[#1d1b20] font-medium underline underline-offset-8 decoration-primary active" href="#home">Home</a>
-        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#about">About</a>
-        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#travel">Travel</a>
-        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#food">Food</a>
-        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#vlogs">Videos</a>
-        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#reels">Reels</a>
-        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#gallery">Gallery</a>
-        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#articles">Articles</a>
         <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#destinations">Destinations</a>
+        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#vlogs">Videos</a>
+        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#articles">Stories</a>
+        <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#about">About</a>
         <a class="text-[#494551] hover:text-[#4f378a] transition-colors py-2" href="#contact">Contact</a>
-        <a class="text-[#4f378a] hover:text-primary transition-colors py-2 font-semibold" href="/admin">Admin</a>
+        <a class="px-3.5 py-1.5 rounded-full bg-[#4f378a] text-white hover:bg-purple-900 transition-all font-semibold tracking-[0.15em] flex items-center gap-1.5 text-[10px] shadow-md ml-2" href="/admin">
+          <span class="material-symbols-outlined text-[14px]">admin_panel_settings</span>
+          <span>ADMIN PORTAL</span>
+        </a>
       </nav>
 
       <div class="flex items-center gap-5">
@@ -150,26 +149,68 @@
           <span>Get In Touch</span>
           <span class="material-symbols-outlined text-[14px]">north_east</span>
         </a>
-        <button id="mobile-menu-toggle" aria-label="Menu" class="xl:hidden p-2 text-[#1d1b20]">
-          <span class="material-symbols-outlined text-[26px]">menu</span>
+        <button id="mobile-menu-toggle" aria-label="Menu" class="xl:hidden p-2 text-[#1d1b20] focus:outline-none">
+          <span class="material-symbols-outlined text-[28px]" id="mobile-hamburger-icon">menu</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- ALWAYS WHITE MOBILE MENU DRAWER -->
-  <div id="mobile-menu-drawer" class="hidden fixed inset-0 z-40 bg-white text-[#1d1b20] pt-24 px-8 flex flex-col gap-5 text-sm tracking-[0.2em] uppercase font-medium shadow-2xl">
-    <a class="py-2 border-b border-black/10 text-[#1d1b20]" href="#home">Home</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#about">About</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#travel">Travel</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#food">Food</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#vlogs">Videos</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#reels">Reels</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#gallery">Gallery</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#articles">Articles</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#destinations">Destinations</a>
-    <a class="py-2 border-b border-black/10 text-[#494551]" href="#contact">Contact</a>
-    <a class="py-2 border-b border-black/10 text-[#4f378a] font-semibold" href="/admin">Admin Portal</a>
+  <!-- ALWAYS WHITE RESPONSIVE MOBILE MENU DRAWER -->
+  <div id="mobile-menu-drawer" class="hidden fixed inset-0 z-40 bg-white text-[#1d1b20] pt-24 pb-8 px-8 flex flex-col justify-between text-sm tracking-[0.2em] uppercase font-medium shadow-2xl overflow-y-auto">
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between pb-3 border-b border-black/10">
+        <span class="text-xs font-bold text-[#4f378a] tracking-widest">Navigation Menu</span>
+        <button id="close-mobile-menu-btn" class="p-1.5 text-[#1d1b20] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined text-[24px]">close</span>
+        </button>
+      </div>
+      <a class="py-2.5 border-b border-black/5 text-[#1d1b20] flex items-center justify-between font-semibold" href="#home">
+        <span>Home</span>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+      </a>
+      <a class="py-2.5 border-b border-black/5 text-[#494551] flex items-center justify-between" href="#destinations">
+        <span>Destinations</span>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+      </a>
+      <a class="py-2.5 border-b border-black/5 text-[#494551] flex items-center justify-between" href="#vlogs">
+        <span>Videos</span>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+      </a>
+      <a class="py-2.5 border-b border-black/5 text-[#494551] flex items-center justify-between" href="#articles">
+        <span>Stories / Journal</span>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+      </a>
+      <a class="py-2.5 border-b border-black/5 text-[#494551] flex items-center justify-between" href="#about">
+        <span>About</span>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+      </a>
+      <a class="py-2.5 border-b border-black/5 text-[#494551] flex items-center justify-between" href="#contact">
+        <span>Contact</span>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+      </a>
+      <a class="py-3 px-4 rounded-xl bg-[#4f378a] text-white font-bold flex items-center justify-between mt-2 shadow-lg hover:bg-purple-900 transition-all" href="/admin">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+          <span>OWNER / ADMIN PORTAL</span>
+        </div>
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+      </a>
+    </div>
+    
+    <div class="pt-6 border-t border-black/10 flex flex-col gap-3">
+      <span class="text-[10px] text-[#79747e] tracking-widest font-mono">SOCIAL MEDIA</span>
+      <div class="flex items-center gap-4 text-[#4f378a]">
+        <a href="https://youtube.com" target="_blank" class="flex items-center gap-1 text-xs font-semibold hover:underline">
+          <span class="material-symbols-outlined text-[16px]">play_circle</span>
+          <span>YouTube</span>
+        </a>
+        <a href="https://instagram.com" target="_blank" class="flex items-center gap-1 text-xs font-semibold hover:underline">
+          <span class="material-symbols-outlined text-[16px]">photo_camera</span>
+          <span>Instagram</span>
+        </a>
+      </div>
+    </div>
   </div>
 
   <!-- MAIN CONTENT CONTAINER -->

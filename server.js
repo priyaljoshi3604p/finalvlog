@@ -832,6 +832,34 @@ app.get('/api/admin/activity', requireAuth, (req, res) => {
   }
 });
 
+// 9. Global Admin Search API
+app.get('/api/admin/search', requireAuth, (req, res) => {
+  try {
+    const q = (req.query.q || '').trim().toLowerCase();
+    if (!q) {
+      return res.json({ success: true, results: { destinations: [], videos: [], articles: [], messages: [] } });
+    }
+
+    const allDests = db.prepare('SELECT * FROM destination').all();
+    const allVids = db.prepare('SELECT * FROM video').all();
+    const allArts = db.prepare('SELECT * FROM article').all();
+    const allMsgs = db.prepare('SELECT * FROM enquiry').all();
+
+    const destinations = allDests.filter(d => (d.name || '').toLowerCase().includes(q) || (d.description || '').toLowerCase().includes(q));
+    const videos = allVids.filter(v => (v.title || '').toLowerCase().includes(q) || (v.description || '').toLowerCase().includes(q) || (v.destination || '').toLowerCase().includes(q));
+    const articles = allArts.filter(a => (a.title || '').toLowerCase().includes(q) || (a.description || '').toLowerCase().includes(q) || (a.content || '').toLowerCase().includes(q));
+    const messages = allMsgs.filter(m => (m.name || '').toLowerCase().includes(q) || (m.email || '').toLowerCase().includes(q) || (m.subject || '').toLowerCase().includes(q) || (m.message || '').toLowerCase().includes(q));
+
+    res.json({
+      success: true,
+      query: q,
+      results: { destinations, videos, articles, messages }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Search failed' });
+  }
+});
+
 /* ==========================================================================
    STATIC FILES & ROUTING
    ========================================================================== */
