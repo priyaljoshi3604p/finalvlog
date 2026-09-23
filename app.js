@@ -477,7 +477,7 @@ async function loadPublicVideos() {
       else colSpan = 'md:col-span-6';
 
       const catLower = (v.category || 'Travel').toLowerCase();
-      const thumb = v.thumbnail || 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
+      const thumb = v.thumbnail || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
       const isUploaded = v.platform === 'Uploaded' || v.video_url.startsWith('/uploads/');
       const locationTag = v.destination ? v.destination : (v.category + ' Expedition');
 
@@ -708,7 +708,7 @@ const destinationData = {
     food: 'Traditional Kerala Sadya, Karimeen Pollichathu, Woodfire Cardamom Chai',
     places: 'Munnar Tea Trails, Alleppey Houseboat Canals, Fort Kochi Spice Streets',
     exp: 'Overnight Houseboat Drift, Sunrise Cloud Inversion Trek, Spice Plantation Walk',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
     videoId: '5D3cZ-6tGkY'
   },
   munnar: {
@@ -719,7 +719,7 @@ const destinationData = {
     food: 'Woodfire Cardamom Chai, Kerala Fish Curry, Hot Parippu Vada, Munnar Fresh Spices',
     places: 'Lockhart Gap Viewpoint, Anamudi Peak, Eravikulam National Park, Mattupetty Dam',
     exp: 'Sunrise Tea Garden Walk, Cloud Inversion Trekking, Spice Plantation Tour',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
     videoId: 'tCnc7fKwe-E'
   },
   goa: {
@@ -730,7 +730,7 @@ const destinationData = {
     food: 'Goan Fish Curry Rice, Pork Vindaloo, Bebinca Dessert',
     places: 'Fontainhas Heritage Quarter, Palolem Cliff Trails, Anjuna Flea Market',
     exp: 'Sunrise Paddleboarding, Colonial House Architectural Tour, Coastal Spice Tasting',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuA6oEBZ-KDnA9Dn3UWuBTH6PgoCxA2ZpWU1tTUdl7GcmuCaX6VLCh7IurnRGygSmWUXU9Flj8R_sCSQDQOyzheJX9t8ZajW-8cbc062d633ca04a5ae2a806a5947184',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuA6oEBZ-KDnA9Dn3UWuBTH6PgoCxA2ZpWU1tTUdl7GcmuCaX6VLCh7IurnRGygSmWUXU9Flj8R_sCSQDQOyzheJX9t8ZajW-8cbc062d633ca04a5ae2a806a5947184',
     videoId: '3CznVyzPm_M'
   },
   rajasthan: {
@@ -741,7 +741,7 @@ const destinationData = {
     food: 'Dal Baati Churma, Laal Maas, Ghevar, Ker Sangri',
     places: 'Amber Fort Jaipur, City Palace Udaipur, Jaisalmer Sand Dunes',
     exp: 'Camel Desert Safari, Royal Palace Heritage Stay, Folk Dance Evening',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
     videoId: 'w8f2aYk57qU'
   },
   manali: {
@@ -752,7 +752,7 @@ const destinationData = {
     food: 'Siddu, Trout Fish, Pahadi Kadhi, Fresh Apple Cider',
     places: 'Solang Valley Snow Point, Hadimba Temple, Old Manali Cafes',
     exp: 'Snow Paragliding, Atal Tunnel Drive, Riverside Camping',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuBMA8WwnX_pezkKJcxpZf1nN02-MUNpa6TqMzrvtasG8VAi0mZxmLgA0hS8tuuU4A-udD2q68-V6RYyjpcKGZaB-3w8rEAl-ddd3c9a6afc05624b9560d9cff5aa526',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuBMA8WwnX_pezkKJcxpZf1nN02-MUNpa6TqMzrvtasG8VAi0mZxmLgA0hS8tuuU4A-udD2q68-V6RYyjpcKGZaB-3w8rEAl-ddd3c9a6afc05624b9560d9cff5aa526',
     videoId: 'g92X1zO6R5w'
   },
   kashmir: {
@@ -763,7 +763,7 @@ const destinationData = {
     food: 'Kashmiri Wazwan, Rogan Josh, Kahwa Tea, Shufta',
     places: 'Dal Lake Srinagar, Gulmarg Gondola Cable Car, Betaab Valley Pahalgam',
     exp: 'Shikara Sunset Ride, Snow Skiing in Gulmarg, Saffron Harvest Walk',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
     videoId: 'v64KOxKVLVg'
   },
   mumbai: {
@@ -774,7 +774,7 @@ const destinationData = {
     food: 'Vada Pav, Mumbai Pav Bhaji, Chowpatty Bhel Puri, Irani Chai',
     places: 'Gateway of India, Marine Drive Promenade, Colaba Causeway',
     exp: 'Marine Drive Sunset Stroll, Heritage Art District Walk, Midnight Street Food Crawl',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
     videoId: 'Pz3_O8h5rX4'
   },
   delhi: {
@@ -785,7 +785,7 @@ const destinationData = {
     food: 'Chandni Chowk Paranthe, Butter Chicken, Chole Bhature, Rabri Jalebi',
     places: 'Red Fort, Qutub Minar, Humayun\'s Tomb, Chandni Chowk Spice Market',
     exp: 'Rickshaw Tour through Old Delhi, Heritage Garden Stroll, Night Food Trail',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
     videoId: '0aZ9a-O719A'
   },
   tamilnadu: {
@@ -796,7 +796,7 @@ const destinationData = {
     food: 'Chettinad Pepper Chicken, Filter Coffee, Madurai Jigarthanda, Dosa',
     places: 'Meenakshi Temple Madurai, Shore Temple Mahabalipuram, Nilgiri Mountain Railway',
     exp: 'Sunrise Temple Chanting, Heritage Toy Train Ride in Ooty, Coastal Sculpture Tour',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
     videoId: '76XW55n90w8'
   },
   bali: {
@@ -807,7 +807,7 @@ const destinationData = {
     food: 'Nasi Goreng, Babi Guling, Fresh Dragonfruit Acai Bowls',
     places: 'Ubud Tegallalang Rice Terraces, Uluwatu Temple Cliffs, Canggu Coastal Trail',
     exp: 'Dawn Volcano Trek at Mount Batur, Waterfall Canyoning, Organic Farm Dining',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuBMA8WwnX_pezkKJcxpZf1nN02-MUNpa6TqMzrvtasG8VAi0mZxmLgA0hS8tuuU4A-udD2q68-V6RYyjpcKGZaB-3w8rEAl-ddd3c9a6afc05624b9560d9cff5aa526',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuBMA8WwnX_pezkKJcxpZf1nN02-MUNpa6TqMzrvtasG8VAi0mZxmLgA0hS8tuuU4A-udD2q68-V6RYyjpcKGZaB-3w8rEAl-ddd3c9a6afc05624b9560d9cff5aa526',
     videoId: 'lcU3p-6c6R0'
   },
   dubai: {
@@ -818,7 +818,7 @@ const destinationData = {
     food: 'Al Machboos, Shawarma, Camel Milk Gelato, Kunafa',
     places: 'Old Dubai Deira Spice Souk, Desert Conservation Reserve, Museum of the Future',
     exp: 'Sunset Desert Safari, Dhow Dinner Cruise, Old Town Culinary Walk',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
     videoId: 'a7G6J0XvXJg'
   },
   tokyo: {
@@ -829,7 +829,7 @@ const destinationData = {
     food: 'Tonkotsu Ramen, Tsukiji Fresh Sushi, Matcha Parfait, Yakitori',
     places: 'Shinjuku Omoide Yokocho Alleys, Senso-ji Temple, Shibuya Crossing',
     exp: 'Late Night Alleyway Food Safari, Traditional Tea Ceremony, Tsukiji Fish Market Dawn Walk',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
     videoId: '406Wv-4a7b0'
   },
   paris: {
@@ -840,7 +840,7 @@ const destinationData = {
     food: 'Fresh Butter Croissants, Escargots, Duck Confit, Artisan Macarons',
     places: 'Montmartre Artists Square, Seine River Promenade, Le Marais Cafes',
     exp: 'Sunset Seine River Walk, Artisan Pastry Workshop, Louvre Midnight View',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
     videoId: 'AQ6GmpMu5C8'
   }
 };
@@ -1064,7 +1064,7 @@ const articleData = {
     category: 'Travel Reflection',
     date: 'Sept 2026',
     readTime: '6 min read',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
     quote: '"Travel isn\'t about ticking off landmarks on a map—it is about surrendering your schedule to the morning mist."',
     videoId: 'tCnc7fKwe-E',
     body: `
@@ -1092,7 +1092,7 @@ const articleData = {
     category: 'Culinary History',
     date: 'Aug 2026',
     readTime: '8 min read',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
     quote: '"Every curry placement on a banana leaf follows ancient Ayurvedic geometry—sour at the narrow tip, sweet at the center, and savory at the base."',
     videoId: '9NH5EfKGqgQ',
     body: `
@@ -1120,7 +1120,7 @@ const articleData = {
     category: 'Food Guide',
     date: 'July 2026',
     readTime: '5 min read',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
     quote: '"Stepping through a red noren curtain into a 6-seat wooden alley counter is the ultimate Tokyo nocturnal ritual."',
     videoId: '406Wv-4a7b0',
     body: `
@@ -1143,7 +1143,7 @@ const articleData = {
     category: 'Expedition Journal',
     date: 'June 2026',
     readTime: '7 min read',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
     quote: '"The desert silence at night in the Arabian dunes makes the buzzing metropolis feel lightyears away."',
     videoId: 'a7G6J0XvXJg',
     body: `

@@ -295,7 +295,7 @@ app.post('/api/admin/login', (req, res) => {
         name: admin.name,
         email: admin.email,
         role: admin.role,
-        avatar: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d'
+        avatar: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d'
       }
     });
   } catch (error) {
@@ -539,7 +539,7 @@ app.post('/api/admin/videos', requireAuth, (req, res) => {
       }
     }
 
-    const defaultThumb = 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
+    const defaultThumb = '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
 
     db.prepare(`
       INSERT INTO video (id, title, description, category, destination, thumbnail, video_url, platform, duration, status, featured)
@@ -644,7 +644,7 @@ app.post('/api/admin/destinations', requireAuth, (req, res) => {
       name,
       tag || '',
       description,
-      image || 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+      image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
       video_url || '',
       video_id || '',
       food || '',
@@ -732,7 +732,7 @@ app.post('/api/admin/articles', requireAuth, (req, res) => {
       title,
       description || '',
       content,
-      image || 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+      image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
       category || 'Travel Essay',
       read_time || '5 min read',
       date || 'Sept 2026',
@@ -836,9 +836,18 @@ app.get('/api/admin/activity', requireAuth, (req, res) => {
    STATIC FILES & ROUTING
    ========================================================================== */
 
-// Serve static assets from project root & admin directory
-app.use(express.static(__dirname));
+// Serve static assets from project root & admin directory with MIME type fallback for extensionless images
+const assetStaticOptions = {
+  setHeaders: (res, filePath) => {
+    if (filePath.includes('stitch') || filePath.includes('AB6AXu') || filePath.includes('AEtjO1')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+    }
+  }
+};
+
+app.use('/assets', express.static(path.join(__dirname, 'assets'), assetStaticOptions));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
+app.use(express.static(__dirname, assetStaticOptions));
 
 // Route /admin and /admin/* to admin/index.html
 app.get('/admin', (req, res) => {
