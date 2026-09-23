@@ -706,6 +706,18 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
+        // Normalize YouTube URLs (convert shorts/youtu.be to embed format)
+        if (!video_url.startsWith('/uploads/') && !video_url.match(/\.(mp4|webm|mov)(\?.*)?$/i)) {
+          const ytMatch = video_url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/|\/)([a-zA-Z0-9_-]{11})/);
+          if (ytMatch && ytMatch[1]) {
+            const ytId = ytMatch[1];
+            video_url = `https://www.youtube.com/embed/${ytId}`;
+            if (!thumbnail) {
+              thumbnail = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+            }
+          }
+        }
+
         // Step 2: Save Video Record to Database
         const payload = { title, video_url, category, duration, destination, thumbnail, description, status, featured };
 

@@ -2,9 +2,12 @@
   "version": 2,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/admin/admin.css", "destination": "/admin/admin.css" },
+    { "source": "/admin/admin.js", "destination": "/admin/admin.js" },
     { "source": "/admin/login", "destination": "/admin/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/(.*)", "destination": "/admin/index.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" },
+    { "source": "/admin/(dashboard|overview|destinations|videos|stories|messages|enquiries|visitors|social|website|settings|activity|gallery|contact-info)", "destination": "/admin/index.html" },
     { "source": "/video/(.*)", "destination": "/index.html" },
     { "source": "/videos/(.*)", "destination": "/index.html" },
     { "source": "/article/(.*)", "destination": "/index.html" },

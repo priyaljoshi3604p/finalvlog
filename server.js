@@ -520,7 +520,7 @@ app.get('/api/admin/videos', requireAuth, (req, res) => {
 
 app.post('/api/admin/videos', requireAuth, (req, res) => {
   try {
-    const { title, description, category, destination, thumbnail, video_url, duration, status, featured } = req.body;
+    let { title, description, category, destination, thumbnail, video_url, duration, status, featured } = req.body;
     if (!title || !video_url) {
       return res.status(400).json({ success: false, error: 'Title and video_url required' });
     }
@@ -529,16 +529,17 @@ app.post('/api/admin/videos', requireAuth, (req, res) => {
     let platform = 'YouTube';
     if (video_url.startsWith('/uploads/') || video_url.match(/\.(mp4|webm|mov|mkv)(\?.*)?$/i)) {
       platform = 'Uploaded';
-    }
-
-    let thumb = thumbnail;
-    if (!thumb && platform === 'YouTube') {
-      const match = video_url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/);
-      if (match) {
-        thumb = `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg`;
+    } else {
+      const match = video_url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/|\/)([a-zA-Z0-9_-]{11})/);
+      if (match && match[1]) {
+        video_url = `https://www.youtube.com/embed/${match[1]}`;
+        if (!thumbnail) {
+          thumbnail = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+        }
       }
     }
 
+    let thumb = thumbnail;
     const defaultThumb = '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
 
     db.prepare(`
@@ -571,11 +572,19 @@ app.post('/api/admin/videos', requireAuth, (req, res) => {
 app.put('/api/admin/videos/:id', requireAuth, (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, category, destination, thumbnail, video_url, duration, status, featured } = req.body;
+    let { title, description, category, destination, thumbnail, video_url, duration, status, featured } = req.body;
 
     let platform = 'YouTube';
     if (video_url && (video_url.startsWith('/uploads/') || video_url.match(/\.(mp4|webm|mov|mkv)(\?.*)?$/i))) {
       platform = 'Uploaded';
+    } else if (video_url) {
+      const match = video_url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/|\/)([a-zA-Z0-9_-]{11})/);
+      if (match && match[1]) {
+        video_url = `https://www.youtube.com/embed/${match[1]}`;
+        if (!thumbnail) {
+          thumbnail = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+        }
+      }
     }
 
     db.prepare(`

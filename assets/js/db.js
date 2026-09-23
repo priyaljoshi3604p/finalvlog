@@ -30,6 +30,51 @@
 
   const DEFAULT_VIDEOS = [
     {
+      id: 'z_8Gzjx3s_Q',
+      title: 'Exploring Goa',
+      description: 'Exploring the sunny beaches, Latin Quarter Fontainhas heritage, and coastal palm trails of Goa, India.',
+      category: 'Travel',
+      thumbnail: 'https://img.youtube.com/vi/z_8Gzjx3s_Q/hqdefault.jpg',
+      youtubeUrl: 'https://www.youtube.com/watch?v=z_8Gzjx3s_Q',
+      video_url: 'https://www.youtube.com/embed/z_8Gzjx3s_Q',
+      duration: '01:00',
+      location: 'Goa, India',
+      destination: 'Goa, India',
+      date: '2026-09-23',
+      featured: true,
+      published: true
+    },
+    {
+      id: '0l0pGB0jiyc',
+      title: 'Exploring Munnar',
+      description: 'Discovering misty hills, tea estate valleys, and serene cloud inversions in Munnar, Kerala.',
+      category: 'Travel',
+      thumbnail: 'https://img.youtube.com/vi/0l0pGB0jiyc/hqdefault.jpg',
+      youtubeUrl: 'https://www.youtube.com/watch?v=0l0pGB0jiyc',
+      video_url: 'https://www.youtube.com/embed/0l0pGB0jiyc',
+      duration: '03:45',
+      location: 'Munnar, Kerala',
+      destination: 'Munnar, Kerala',
+      date: '2026-09-23',
+      featured: true,
+      published: true
+    },
+    {
+      id: 'k8hmpz2tVEg',
+      title: 'Kerala Sadhya',
+      description: 'Experiencing traditional 24+ item Kerala banana leaf Sadhya feast cooked over woodfire.',
+      category: 'Food',
+      thumbnail: 'https://img.youtube.com/vi/k8hmpz2tVEg/hqdefault.jpg',
+      youtubeUrl: 'https://www.youtube.com/watch?v=k8hmpz2tVEg',
+      video_url: 'https://www.youtube.com/embed/k8hmpz2tVEg',
+      duration: '02:30',
+      location: 'Kerala, India',
+      destination: 'Kerala, India',
+      date: '2026-09-23',
+      featured: true,
+      published: true
+    },
+    {
       id: '5D3cZ-6tGkY',
       title: '4:30 AM Mist at Lockhart Gap, Munnar',
       description: 'Exploring mist-veiled tea gardens at sunrise in Munnar, Kerala. Cardamom chai stalls and mountain cloud inversions.',
