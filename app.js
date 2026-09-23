@@ -713,14 +713,14 @@ const destinationData = {
   },
   munnar: {
     name: 'Munnar',
-    title: 'Munnar, Kerala',
-    tag: 'High Altitude Tea Gardens & Mist-Veiled Ridge Peaks',
-    desc: 'Nestled 1,600 meters above sea level in the Western Ghats, Munnar features sprawling green tea estates, exotic flora, and crisp mountain mist.',
+    title: 'Munnar — The Misty Hills of Kerala',
+    tag: 'Misty Western Ghats & Vast Tea Estates',
+    desc: 'Nestled in the Western Ghats of Kerala at around 1,600 metres above sea level, Munnar is famous for mist-covered mountains, tea plantations, waterfalls and peaceful valleys.',
     food: 'Woodfire Cardamom Chai, Kerala Fish Curry, Hot Parippu Vada, Munnar Fresh Spices',
-    places: 'Lockhart Gap Viewpoint, Anamudi Peak, Eravikulam National Park, Mattupetty Dam',
-    exp: 'Sunrise Tea Garden Walk, Cloud Inversion Trekking, Spice Plantation Tour',
+    places: 'Tea Museum, Eravikulam National Park, Mattupetty Dam, Echo Point, Top Station, Anayirangal',
+    exp: 'Sunrise Tea Garden Walk, Neelakurinji Flower Trails, Forest & Waterfall Hikes',
     img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
-    videoId: 'tCnc7fKwe-E'
+    videoId: 'okQ2Wr6GPXg'
   },
   goa: {
     name: 'Goa',
@@ -731,7 +731,7 @@ const destinationData = {
     places: 'Fontainhas Heritage Quarter, Palolem Cliff Trails, Anjuna Flea Market',
     exp: 'Sunrise Paddleboarding, Colonial House Architectural Tour, Coastal Spice Tasting',
     img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuA6oEBZ-KDnA9Dn3UWuBTH6PgoCxA2ZpWU1tTUdl7GcmuCaX6VLCh7IurnRGygSmWUXU9Flj8R_sCSQDQOyzheJX9t8ZajW-8cbc062d633ca04a5ae2a806a5947184',
-    videoId: '3CznVyzPm_M'
+    videoId: 'z_8Gzjx3s_Q'
   },
   rajasthan: {
     name: 'Rajasthan',
@@ -1060,59 +1060,77 @@ function initArticleFilters() {
 
 const articleData = {
   'munnar-fog': {
-    title: 'The Art of Slow Travel in Munnar: How 4:30 AM Fog Taught Me Patience',
-    category: 'Travel Reflection',
+    title: 'Munnar – The Misty Hills of Kerala',
+    category: 'Travel Guide',
     date: 'Sept 2026',
     readTime: '6 min read',
     img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
-    quote: '"Travel isn\'t about ticking off landmarks on a map—it is about surrendering your schedule to the morning mist."',
-    videoId: 'tCnc7fKwe-E',
+    quote: '"Nestled in the Western Ghats of Kerala at around 1,600 metres above sea level, Munnar is famous for mist-covered mountains, tea plantations, and peaceful valleys."',
+    videoId: 'okQ2Wr6GPXg',
     body: `
       <p class="font-headline text-lg text-amber-200 font-normal leading-relaxed">
-        The air in Munnar at 4:30 AM smells of damp eucalyptus, woodsmoke, and bruised cardamom leaves. Standing at Lockhart Gap, waiting for dawn, you don't see the mountain range right away. You feel it.
+        Nestled in the Western Ghats of Kerala, Munnar is one of South India’s most beautiful hill stations. Located in Idukki district at around 1,600 metres above sea level, Munnar is famous for its mist-covered mountains, endless tea plantations, waterfalls and peaceful valleys.
       </p>
       <p>
-        In modern travel culture, we are trained to chase instant views: snap the sunset, film the drone shot, move to the next pin on Google Maps. But the tea mountains of Kerala refuse to operate on human schedules. Here, clouds drift on their own terms.
+        The landscape of Munnar is covered with beautiful green tea gardens that stretch across the hills. Visitors can explore the tea plantations, learn about the history of tea production at the Tea Museum, and enjoy panoramic views of the surrounding mountains.
       </p>
-      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">The Silence of Lockhart Gap</h3>
+      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Eravikulam National Park &amp; Neelakurinji</h3>
       <p>
-        As the first golden light breaks through the mountain gap, local estate workers move rhythmically along the terraced tea slopes with woven baskets strapped across their foreheads. Watching them work with precise grace brought me a deep sense of calm that no hotel resort could ever replicate.
+        Munnar is also home to Eravikulam National Park, which is known for the endangered Nilgiri Tahr and the famous Neelakurinji flower. Other popular places around Munnar include Mattupetty Dam, Echo Point, Top Station, Chinnakanal and Anayirangal.
+      </p>
+      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Nature &amp; Scenic Trails</h3>
+      <p>
+        For travellers who enjoy nature, Munnar offers opportunities to explore forests, waterfalls, viewpoints and scenic trails. The combination of cool mountain air, green landscapes and misty mornings makes the destination especially attractive for a relaxing getaway.
       </p>
       <p>
-        At a small roadside tea stall constructed from bamboo and iron sheets, an elderly man named Kuttan Chettan poured fresh cardamom chai between two glass tumblers. He crushed green cardamom pods grown just 20 meters down the hill right into the boiling kettle.
+        Whether you're travelling for the scenery, tea plantations, wildlife or simply a peaceful escape from busy city life, Munnar offers a memorable experience in the heart of Kerala's mountains.
       </p>
-      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Veyra Trails Advice for Slow Travelers</h3>
-      <p>
-        If you visit Munnar, skip the crowded viewpoint parking lots. Wake up while the stars are still sharp in the sky, walk down the old British colonial bridle trails, and sit softly with a steaming glass of chai. The mist will speak to you if you give it time.
-      </p>
+      <h3 class="font-headline text-xl text-amber-300 font-light mt-6 mb-2">📍 Highlights</h3>
+      <ul class="space-y-1 text-sm text-white/90 font-light">
+        <li>🌿 Vast tea plantations</li>
+        <li>⛰️ Misty Western Ghats</li>
+        <li>🐐 Eravikulam National Park</li>
+        <li>💧 Scenic waterfalls</li>
+        <li>🌄 Top Station viewpoints</li>
+        <li>🚣 Mattupetty and Anayirangal</li>
+        <li>🍵 Tea Museum and tea experiences</li>
+        <li>🌸 Neelakurinji landscapes</li>
+      </ul>
     `
   },
   'kerala-sadya': {
-    title: 'Decoding the 24 Dishes of Kerala’s Banana Leaf Sadya',
+    title: 'Kerala Sadya – A Feast of Flavours',
     category: 'Culinary History',
     date: 'Aug 2026',
     readTime: '8 min read',
     img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
-    quote: '"Every curry placement on a banana leaf follows ancient Ayurvedic geometry—sour at the narrow tip, sweet at the center, and savory at the base."',
+    quote: '"Kerala Sadya is a grand vegetarian feast served on a fresh banana leaf that brings together a wide variety of flavours, colours and textures."',
     videoId: '9NH5EfKGqgQ',
     body: `
       <p class="font-headline text-lg text-amber-200 font-normal leading-relaxed">
-        To eat a traditional Sadya is to partake in a living culinary ritual that spans centuries. Served on a vibrant green, freshly cut banana leaf, this plant-based feast brings together up to 28 distinct dishes.
+        Kerala Sadya is one of the most celebrated traditional dishes of Kerala. More than just a meal, Sadya is a grand vegetarian feast that brings together a wide variety of flavours, colours and textures. It is traditionally served on a fresh banana leaf and is especially associated with festivals, weddings and other celebrations.
       </p>
       <p>
-        The leaf itself is laid with its tapered tip pointing to the left of the diner. Every dish has a precise geometric position ordained by Ayurvedic principles to aid digestion and harmonize the six fundamental tastes (*Shadrasa*).
+        A traditional Sadya can include numerous dishes such as Parippu, Sambar, Avial, Thoran, Olan, Kaalan, Pachadi, Kichadi, pickles, banana chips and Pappadam. The dishes are arranged and served in a traditional order, creating a unique dining experience.
       </p>
-      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Symphony of Flavors</h3>
+      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Payasam – The Sweet Finale</h3>
       <p>
-        The journey begins with crispy banana chips (*Upperi*) fried in golden unrefined coconut oil, followed by *Sharkara Varatti* (jaggery-coated banana chunks spiced with dried ginger). Next comes *Inji Puli*—a sweet, spicy, and sour ginger-tamarind reduction affectionately called the "100-curry equivalent" for its digestive punch.
+        One of the highlights of Sadya is Payasam, a traditional Kerala dessert. Popular varieties include Palada Payasam, Ada Pradhaman and Parippu Payasam. The sweet dessert is often served along with ripe banana and completes the festive meal.
+      </p>
+      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Onam &amp; Cultural Heritage</h3>
+      <p>
+        Sadya is particularly important during Onam, when the traditional Onasadya becomes a major part of the celebrations. Families and communities come together to prepare and enjoy the feast, making it a symbol of celebration, hospitality and togetherness.
       </p>
       <p>
-        Rich red Matta rice is served with steaming *Parippu* ghee dal, followed by coconut-laden *Avial*, *Thoran*, and soothing white gourd *Olan*. The meal reaches its crescendo with rich *Ada Pradhaman* (rice pasta boiled in thick coconut milk and jaggery).
+        From the colourful banana leaf to the variety of curries and the final serving of Payasam, Kerala Sadya offers visitors a delicious way to experience the food and cultural traditions of Kerala.
       </p>
-      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">The Etiquette of Folding the Leaf</h3>
-      <p>
-        When you complete your meal, fold the banana leaf top-to-bottom toward yourself. This subtle gesture signals absolute satisfaction and respect to your hosts and cooks.
-      </p>
+      <div class="mt-6 p-4 bg-white/10 rounded-xl border border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h4 class="font-headline text-base text-amber-300">🍃 Official Kerala Tourism Guide</h4>
+          <p class="text-xs text-white/80">For more information about the traditional Sadya, ingredients and serving style, visit Kerala Tourism.</p>
+        </div>
+        <a href="https://www.keralatourism.org/kerala-food/sadya/" target="_blank" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold text-xs rounded-full transition-colors shrink-0">Visit Kerala Tourism</a>
+      </div>
     `
   },
   'tokyo-ramen': {
