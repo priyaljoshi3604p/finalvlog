@@ -390,7 +390,6 @@ function initActiveNavSpy() {
    -------------------------------------------------------------------------- */
 function initVlogFilters() {
   const filterBtns = document.querySelectorAll('.vlog-filter-btn');
-  const vlogCards = document.querySelectorAll('.vlog-card-item');
 
   filterBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -402,22 +401,29 @@ function initVlogFilters() {
       btn.classList.remove('bg-surface-container-highest', 'text-on-surface-variant');
       btn.classList.add('bg-primary', 'text-on-primary');
 
-      const category = btn.getAttribute('data-category');
+      const targetCat = (btn.getAttribute('data-category') || 'all').toLowerCase().trim();
+      const vlogCards = document.querySelectorAll('.vlog-card-item');
 
       vlogCards.forEach((card) => {
-        const cardCategory = card.getAttribute('data-category');
-        if (category === 'all' || cardCategory === category) {
+        const cardCat = (card.getAttribute('data-category') || '').toLowerCase().trim();
+        const matches = targetCat === 'all' || 
+                        cardCat === targetCat || 
+                        cardCat.includes(targetCat) || 
+                        targetCat.includes(cardCat) || 
+                        (targetCat.startsWith('adventur') && cardCat.startsWith('adventur'));
+
+        if (matches) {
           card.style.display = 'flex';
           setTimeout(() => {
             card.style.opacity = '1';
             card.style.transform = 'scale(1)';
-          }, 50);
+          }, 30);
         } else {
           card.style.opacity = '0';
           card.style.transform = 'scale(0.95)';
           setTimeout(() => {
             card.style.display = 'none';
-          }, 300);
+          }, 250);
         }
       });
     });
@@ -426,7 +432,6 @@ function initVlogFilters() {
 
 function initGalleryFilters() {
   const filterBtns = document.querySelectorAll('.gallery-filter-btn');
-  const galleryItems = document.querySelectorAll('.gallery-item');
 
   filterBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -438,16 +443,19 @@ function initGalleryFilters() {
       btn.classList.remove('bg-surface-container-highest', 'text-on-surface-variant');
       btn.classList.add('bg-primary', 'text-on-primary');
 
-      const category = btn.getAttribute('data-category');
+      const targetCat = (btn.getAttribute('data-category') || 'all').toLowerCase().trim();
+      const galleryItems = document.querySelectorAll('.gallery-item');
 
       galleryItems.forEach((item) => {
-        const itemCategory = item.getAttribute('data-category');
-        if (category === 'all' || itemCategory === category) {
+        const itemCat = (item.getAttribute('data-category') || '').toLowerCase().trim();
+        const matches = targetCat === 'all' || itemCat === targetCat || itemCat.includes(targetCat) || targetCat.includes(itemCat);
+
+        if (matches) {
           item.style.display = 'block';
-          setTimeout(() => { item.style.opacity = '1'; }, 50);
+          setTimeout(() => { item.style.opacity = '1'; }, 30);
         } else {
           item.style.opacity = '0';
-          setTimeout(() => { item.style.display = 'none'; }, 300);
+          setTimeout(() => { item.style.display = 'none'; }, 250);
         }
       });
     });
@@ -1072,7 +1080,6 @@ function initMobileMenu() {
    -------------------------------------------------------------------------- */
 function initArticleFilters() {
   const filterBtns = document.querySelectorAll('.article-filter-btn');
-  const articleCards = document.querySelectorAll('.article-card-item');
 
   if (!filterBtns.length) return;
 
@@ -1086,22 +1093,25 @@ function initArticleFilters() {
       btn.classList.remove('bg-surface-container-highest', 'text-on-surface-variant');
       btn.classList.add('bg-primary', 'text-on-primary');
 
-      const category = btn.getAttribute('data-category');
+      const targetCat = (btn.getAttribute('data-category') || 'all').toLowerCase().trim();
+      const articleCards = document.querySelectorAll('.article-card-item');
 
       articleCards.forEach((card) => {
-        const cardCategory = card.getAttribute('data-category');
-        if (category === 'all' || cardCategory === category) {
+        const cardCat = (card.getAttribute('data-category') || '').toLowerCase().trim();
+        const matches = targetCat === 'all' || cardCat === targetCat || cardCat.includes(targetCat) || targetCat.includes(cardCat);
+
+        if (matches) {
           card.style.display = 'flex';
           setTimeout(() => {
             card.style.opacity = '1';
             card.style.transform = 'scale(1)';
-          }, 50);
+          }, 30);
         } else {
           card.style.opacity = '0';
           card.style.transform = 'scale(0.95)';
           setTimeout(() => {
             card.style.display = 'none';
-          }, 300);
+          }, 250);
         }
       });
     });
