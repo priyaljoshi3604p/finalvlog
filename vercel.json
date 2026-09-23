@@ -3,7 +3,16 @@
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/admin/login", "destination": "/admin/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/", "destination": "/admin/index.html" },
+    { "source": "/admin/(.*)", "destination": "/admin/index.html" },
+    { "source": "/video/(.*)", "destination": "/index.html" },
+    { "source": "/videos/(.*)", "destination": "/index.html" },
+    { "source": "/article/(.*)", "destination": "/index.html" },
+    { "source": "/articles/(.*)", "destination": "/index.html" },
+    { "source": "/story/(.*)", "destination": "/index.html" },
+    { "source": "/stories/(.*)", "destination": "/index.html" },
+    { "source": "/blog/(.*)", "destination": "/index.html" },
+    { "source": "/destination/(.*)", "destination": "/index.html" },
+    { "source": "/destinations/(.*)", "destination": "/index.html" },
     { "source": "/about", "destination": "/index.html" },
     { "source": "/travel", "destination": "/index.html" },
     { "source": "/food", "destination": "/index.html" },
@@ -15,3 +24,4 @@
     { "source": "/contact", "destination": "/index.html" }
   ]
 }
+
