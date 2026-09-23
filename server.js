@@ -17,42 +17,37 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'veyra_trails_fallback_secret_key_2026';
 
 // Initialize DB schema & seeds
 initDatabase();
 
-// Ensure upload directories exist
-const isVercelEnv = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
-const repoUploadsDir = path.join(__dirname, 'uploads');
-const tmpUploadsDir = path.join('/tmp', 'uploads');
+// Ensure upload directories exist. On Vercel the project's own files are
+// read-only, so uploads must go to /tmp instead. Note: /tmp on Vercel is
+// ephemeral (wiped between cold starts / deployments), so files uploaded
+// through the admin panel there won't persist long-term — for production use,
+// swap this out for a real storage service (Vercel Blob, S3, Cloudinary...).
+const uploadsDir = process.env.VERCEL
+  ? '/tmp/uploads'
+  : path.join(__dirname, 'uploads');
+const videosDir = path.join(uploadsDir, 'videos');
+const thumbsDir = path.join(uploadsDir, 'thumbnails');
 
-[repoUploadsDir, path.join(repoUploadsDir, 'videos'), path.join(repoUploadsDir, 'thumbnails')].forEach(dir => {
+[uploadsDir, videosDir, thumbsDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
-    try { fs.mkdirSync(dir, { recursive: true }); } catch (e) {}
+    fs.mkdirSync(dir, { recursive: true });
   }
 });
-
-if (isVercelEnv) {
-  [tmpUploadsDir, path.join(tmpUploadsDir, 'videos'), path.join(tmpUploadsDir, 'thumbnails')].forEach(dir => {
-    if (!fs.existsSync(dir)) {
-      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) {}
-    }
-  });
-}
 
 // Configure Multer Storage for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const baseDir = isVercelEnv ? tmpUploadsDir : repoUploadsDir;
-    const targetDir = file.fieldname === 'video_file' || (file.mimetype && file.mimetype.startsWith('video/'))
-      ? path.join(baseDir, 'videos')
-      : path.join(baseDir, 'thumbnails');
-    if (!fs.existsSync(targetDir)) {
-      try { fs.mkdirSync(targetDir, { recursive: true }); } catch (e) {}
+    if (file.fieldname === 'video_file' || (file.mimetype && file.mimetype.startsWith('video/'))) {
+      cb(null, videosDir);
+    } else {
+      cb(null, thumbsDir);
     }
-    cb(null, targetDir);
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname) || (file.fieldname === 'video_file' ? '.mp4' : '.jpg');
@@ -71,10 +66,7 @@ app.use(cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use(cookieParser());
-app.use('/uploads', express.static(repoUploadsDir));
-if (isVercelEnv) {
-  app.use('/uploads', express.static(tmpUploadsDir));
-}
+app.use('/uploads', express.static(uploadsDir));
 
 // Logger Helper
 function logActivity(action, entity, description) {
@@ -303,7 +295,7 @@ app.post('/api/admin/login', (req, res) => {
         name: admin.name,
         email: admin.email,
         role: admin.role,
-        avatar: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d'
+        avatar: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d'
       }
     });
   } catch (error) {
@@ -547,7 +539,7 @@ app.post('/api/admin/videos', requireAuth, (req, res) => {
       }
     }
 
-    const defaultThumb = 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
+    const defaultThumb = '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
 
     db.prepare(`
       INSERT INTO video (id, title, description, category, destination, thumbnail, video_url, platform, duration, status, featured)
@@ -652,7 +644,7 @@ app.post('/api/admin/destinations', requireAuth, (req, res) => {
       name,
       tag || '',
       description,
-      image || 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+      image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
       video_url || '',
       video_id || '',
       food || '',
@@ -725,7 +717,7 @@ app.get('/api/admin/articles', requireAuth, (req, res) => {
 
 app.post('/api/admin/articles', requireAuth, (req, res) => {
   try {
-    const { id, title, description, content, image, category, read_time, date, date_iso, video_id, quote, status } = req.body;
+    const { id, title, description, content, image, category, read_time, date, video_id, quote, status } = req.body;
     if (!title || !content) {
       return res.status(400).json({ success: false, error: 'Title and content required' });
     }
@@ -733,18 +725,17 @@ app.post('/api/admin/articles', requireAuth, (req, res) => {
     const artId = id || 'art_' + Date.now();
 
     db.prepare(`
-      INSERT INTO article (id, title, description, content, image, category, read_time, date, date_iso, video_id, quote, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO article (id, title, description, content, image, category, read_time, date, video_id, quote, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       artId,
       title,
       description || '',
       content,
-      image || 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+      image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
       category || 'Travel Essay',
       read_time || '5 min read',
       date || 'Sept 2026',
-      date_iso || '',
       video_id || '',
       quote || '',
       status || 'published'
@@ -754,7 +745,6 @@ app.post('/api/admin/articles', requireAuth, (req, res) => {
 
     res.status(201).json({ success: true, message: 'Blog post created successfully', articleId: artId });
   } catch (error) {
-    console.error('Create article error:', error);
     res.status(500).json({ success: false, error: 'Failed to create blog post' });
   }
 });
@@ -762,11 +752,11 @@ app.post('/api/admin/articles', requireAuth, (req, res) => {
 app.put('/api/admin/articles/:id', requireAuth, (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, content, image, category, read_time, date, date_iso, video_id, quote, status } = req.body;
+    const { title, description, content, image, category, read_time, date, video_id, quote, status } = req.body;
 
     db.prepare(`
       UPDATE article
-      SET title = ?, description = ?, content = ?, image = ?, category = ?, read_time = ?, date = ?, date_iso = ?, video_id = ?, quote = ?, status = ?
+      SET title = ?, description = ?, content = ?, image = ?, category = ?, read_time = ?, date = ?, video_id = ?, quote = ?, status = ?
       WHERE id = ?
     `).run(
       title,
@@ -776,7 +766,6 @@ app.put('/api/admin/articles/:id', requireAuth, (req, res) => {
       category,
       read_time,
       date,
-      date_iso || '',
       video_id,
       quote,
       status,
@@ -787,7 +776,6 @@ app.put('/api/admin/articles/:id', requireAuth, (req, res) => {
 
     res.json({ success: true, message: 'Blog post updated successfully' });
   } catch (error) {
-    console.error('Update article error:', error);
     res.status(500).json({ success: false, error: 'Failed to update blog post' });
   }
 });
@@ -844,29 +832,50 @@ app.get('/api/admin/activity', requireAuth, (req, res) => {
   }
 });
 
+// 9. Global Admin Search API
+app.get('/api/admin/search', requireAuth, (req, res) => {
+  try {
+    const q = (req.query.q || '').trim().toLowerCase();
+    if (!q) {
+      return res.json({ success: true, results: { destinations: [], videos: [], articles: [], messages: [] } });
+    }
+
+    const allDests = db.prepare('SELECT * FROM destination').all();
+    const allVids = db.prepare('SELECT * FROM video').all();
+    const allArts = db.prepare('SELECT * FROM article').all();
+    const allMsgs = db.prepare('SELECT * FROM enquiry').all();
+
+    const destinations = allDests.filter(d => (d.name || '').toLowerCase().includes(q) || (d.description || '').toLowerCase().includes(q));
+    const videos = allVids.filter(v => (v.title || '').toLowerCase().includes(q) || (v.description || '').toLowerCase().includes(q) || (v.destination || '').toLowerCase().includes(q));
+    const articles = allArts.filter(a => (a.title || '').toLowerCase().includes(q) || (a.description || '').toLowerCase().includes(q) || (a.content || '').toLowerCase().includes(q));
+    const messages = allMsgs.filter(m => (m.name || '').toLowerCase().includes(q) || (m.email || '').toLowerCase().includes(q) || (m.subject || '').toLowerCase().includes(q) || (m.message || '').toLowerCase().includes(q));
+
+    res.json({
+      success: true,
+      query: q,
+      results: { destinations, videos, articles, messages }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Search failed' });
+  }
+});
+
 /* ==========================================================================
    STATIC FILES & ROUTING
    ========================================================================== */
 
-// SEO & Security Header Middleware for Admin Portal
-app.use('/admin', (req, res, next) => {
-  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
-  next();
-});
+// Serve static assets from project root & admin directory with MIME type fallback for extensionless images
+const assetStaticOptions = {
+  setHeaders: (res, filePath) => {
+    if (filePath.includes('stitch') || filePath.includes('AB6AXu') || filePath.includes('AEtjO1')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+    }
+  }
+};
 
-// Explicit SEO Endpoints
-app.get('/robots.txt', (req, res) => {
-  res.type('text/plain');
-  res.sendFile(path.join(__dirname, 'robots.txt'));
-});
-
-app.get('/sitemap.xml', (req, res) => {
-  res.type('application/xml');
-  res.sendFile(path.join(__dirname, 'sitemap.xml'));
-});
-
-// Serve static assets from project root
-app.use(express.static(__dirname));
+app.use('/assets', express.static(path.join(__dirname, 'assets'), assetStaticOptions));
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
+app.use(express.static(__dirname, assetStaticOptions));
 
 // Route /admin and /admin/* to admin/index.html
 app.get('/admin', (req, res) => {
@@ -874,23 +883,27 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/admin/*splat', (req, res) => {
+  if (req.params && req.params.splat && req.params.splat.includes('.')) {
+    return res.status(404).send('Not found');
+  }
   res.sendFile(path.join(__dirname, 'admin', 'index.html'));
 });
 
-// Clean SEO Public Section Routes
-const publicRoutes = ['/about', '/travel', '/food', '/vlogs', '/reels', '/gallery', '/articles', '/destinations', '/contact'];
-publicRoutes.forEach(route => {
-  app.get(route, (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-  });
+// Fallback to public index.html for all other routes
+app.get('/*splat', (req, res) => {
+  if (req.params && req.params.splat && req.params.splat.includes('.')) {
+    return res.status(404).send('Not found');
+  }
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Fallback to public index.html for all other routes
-export default app;
-
-if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Veyra Trails Server running on port ${PORT} (0.0.0.0)`);
+// Only bind to a port when running locally (`npm run dev` / `npm start`).
+// On Vercel, the app itself is exported and invoked per-request as a
+// serverless function instead of running a long-lived server.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Veyra Trails Server running on http://localhost:${PORT}`);
   });
 }
 
+export default app;

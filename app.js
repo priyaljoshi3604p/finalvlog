@@ -8,12 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initVeyraDBSync();
   initBackendAPISync();
   loadPublicVideos();
+  loadPublicArticles();
   initThreeJSGlobe();
   init3DTiltCards();
   initHeroParallax();
   initHeaderScroll();
   initActiveNavSpy();
-  initCleanSectionRouting();
   initVlogFilters();
   initGalleryFilters();
   initArticleFilters();
@@ -25,51 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initFormHandlers();
   initMobileMenu();
 });
-
-function initCleanSectionRouting() {
-  try {
-    const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-    const sectionRoutes = ['about', 'travel', 'food', 'vlogs', 'reels', 'gallery', 'articles', 'destinations', 'contact'];
-
-    if (sectionRoutes.includes(path)) {
-      const targetSection = document.getElementById(path);
-      if (targetSection) {
-        setTimeout(() => {
-          targetSection.scrollIntoView({ behavior: 'smooth' });
-        }, 200);
-      }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', () => {
-        const targetId = anchor.getAttribute('href').replace('#', '');
-        if (targetId && sectionRoutes.includes(targetId)) {
-          if (window.history && window.history.pushState) {
-            window.history.pushState(null, '', `/${targetId}`);
-          }
-        } else if (targetId === 'home') {
-          if (window.history && window.history.pushState) {
-            window.history.pushState(null, '', '/');
-          }
-        }
-      });
-    });
-
-    window.addEventListener('popstate', () => {
-      const currentPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
-      if (sectionRoutes.includes(currentPath)) {
-        const sec = document.getElementById(currentPath);
-        if (sec) sec.scrollIntoView({ behavior: 'smooth' });
-      } else if (!currentPath) {
-        const homeSec = document.getElementById('home');
-        if (homeSec) homeSec.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  } catch (err) {
-    console.warn('Clean routing notice:', err);
-  }
-}
-
 
 function initVisitorTracking() {
   try {
@@ -178,7 +133,7 @@ function initVeyraDBSync() {
       }
     });
 
-    // Sync Published vs Unpublished Articles
+    // Filter Published vs Unpublished Articles
     const articles = window.VeyraDB.getAll('articles');
     const artCards = document.querySelectorAll('.article-card-item');
     artCards.forEach(card => {
@@ -188,44 +143,6 @@ function initVeyraDBSync() {
         card.style.display = 'none';
       }
     });
-
-    // Render newly created articles dynamically
-    const articlesGrid = document.querySelector('#articles .grid');
-    if (articlesGrid) {
-      const publishedArticles = window.VeyraDB.getPublished('articles');
-      publishedArticles.forEach(art => {
-        const existing = articlesGrid.querySelector(`[data-article-id="${art.id}"]`);
-        if (!existing) {
-          const card = document.createElement('div');
-          card.className = 'article-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer border border-outline-variant/30';
-          card.setAttribute('data-article-id', art.id);
-          card.setAttribute('data-category', (art.category || 'travel').toLowerCase());
-          card.innerHTML = `
-            <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
-              <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" alt="${art.title}" src="${art.image}">
-              <span class="absolute top-4 left-4 px-3 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${art.category || 'Travel Guide'}</span>
-            </div>
-            <div class="p-6 flex flex-col justify-between flex-1 gap-4">
-              <div class="flex items-center justify-between text-[10px] tracking-[0.2em] uppercase text-outline font-medium">
-                <span>${art.date || 'Today'} • ${art.read_time || art.readTime || '5 min read'}</span>
-                <span class="text-primary font-semibold">By Veyra Trails</span>
-              </div>
-              <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
-                ${art.title}
-              </h3>
-              <p class="text-xs text-on-surface-variant font-light leading-relaxed line-clamp-3">
-                ${art.description}
-              </p>
-              <div class="read-article-btn inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase font-medium text-primary group-hover:text-primary-container transition-colors pt-2">
-                <span>Read Full Article</span>
-                <span class="material-symbols-outlined text-[16px]">menu_book</span>
-              </div>
-            </div>
-          `;
-          articlesGrid.appendChild(card);
-        }
-      });
-    }
 
     // Filter Published vs Unpublished Reels
     const reels = window.VeyraDB.getAll('reels');
@@ -561,7 +478,7 @@ async function loadPublicVideos() {
       else colSpan = 'md:col-span-6';
 
       const catLower = (v.category || 'Travel').toLowerCase();
-      const thumb = v.thumbnail || 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
+      const thumb = v.thumbnail || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
       const isUploaded = v.platform === 'Uploaded' || v.video_url.startsWith('/uploads/');
       const locationTag = v.destination ? v.destination : (v.category + ' Expedition');
 
@@ -639,6 +556,11 @@ function initVideoModal() {
 
   // Event Delegation for All Video Cards & Triggers Across the Website
   document.addEventListener('click', (e) => {
+    // Ignore article clicks so initArticleModal can open articles
+    if (e.target.closest('.article-card-item, [data-article-id]') && !e.target.closest('.play-btn-trigger, [data-video-id]')) {
+      return;
+    }
+
     const cardOrTrigger = e.target.closest('[data-video-id], [data-video-url], .play-btn-trigger, .vlog-card-item, .tilt-card');
     
     if (!cardOrTrigger) return;
@@ -671,8 +593,8 @@ function initVideoModal() {
     e.preventDefault();
     e.stopPropagation();
 
-    const ytId = extractYouTubeId(rawUrl) || (videoId && videoId.length === 11 ? videoId : null);
-    const isUploadedFile = !ytId && (rawUrl.length > 0 || !videoId);
+    const ytId = extractYouTubeId(rawUrl) || extractYouTubeId(videoId) || (videoId && videoId.length === 11 ? videoId : defaultVideoId);
+    const isUploadedFile = !ytId && rawUrl.length > 0 && (rawUrl.startsWith('/uploads/') || rawUrl.match(/\.(mp4|webm|mov)(\?.*)?$/i));
 
     if (isUploadedFile && videoPlayer) {
       if (iframe) {
@@ -742,7 +664,9 @@ function initVideoModal() {
 
 function extractYouTubeId(url) {
   if (!url) return null;
-  const match = url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+  const str = String(url).trim();
+  if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+  const match = str.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/)([a-zA-Z0-9_-]{11})/);
   return match ? match[1] : null;
 }
 
@@ -784,38 +708,71 @@ function initGalleryLightbox() {
    8. INTERACTIVE DESTINATION EXPLORER
    -------------------------------------------------------------------------- */
 const destinationData = {
-  kerala: {
-    name: 'Kerala',
-    title: 'Kerala, India',
-    tag: 'Tropical Backwaters & Mist-Veiled Tea Peaks',
-    desc: 'Known as God\'s Own Country, Kerala blends lush palm-lined backwaters, coconut groves, and high-altitude cardamom tea estates of Munnar.',
-    food: 'Traditional Kerala Sadya, Karimeen Pollichathu, Woodfire Cardamom Chai',
-    places: 'Munnar Tea Trails, Alleppey Houseboat Canals, Fort Kochi Spice Streets',
-    exp: 'Overnight Houseboat Drift, Sunrise Cloud Inversion Trek, Spice Plantation Walk',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
-    videoId: '5D3cZ-6tGkY'
-  },
   munnar: {
     name: 'Munnar',
-    title: 'Munnar, Kerala',
-    tag: 'High Altitude Tea Gardens & Mist-Veiled Ridge Peaks',
-    desc: 'Nestled 1,600 meters above sea level in the Western Ghats, Munnar features sprawling green tea estates, exotic flora, and crisp mountain mist.',
+    title: 'Munnar — The Misty Hills of Kerala',
+    tag: 'Misty Western Ghats & Vast Tea Estates',
+    desc: 'Nestled in the Western Ghats of Kerala at around 1,600 metres above sea level, Munnar is famous for mist-covered mountains, tea plantations, waterfalls and peaceful valleys.',
     food: 'Woodfire Cardamom Chai, Kerala Fish Curry, Hot Parippu Vada, Munnar Fresh Spices',
-    places: 'Lockhart Gap Viewpoint, Anamudi Peak, Eravikulam National Park, Mattupetty Dam',
-    exp: 'Sunrise Tea Garden Walk, Cloud Inversion Trekking, Spice Plantation Tour',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
-    videoId: 'tCnc7fKwe-E'
+    places: 'Tea Museum, Eravikulam National Park, Mattupetty Dam, Echo Point, Top Station, Anayirangal',
+    exp: 'Sunrise Tea Garden Walk, Neelakurinji Flower Trails, Forest & Waterfall Hikes',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+    videoId: 'Z4yM3xERGvA'
   },
   goa: {
     name: 'Goa',
-    title: 'Goa, India',
+    title: 'Goa — Beaches, Culture & Coastal Adventures',
     tag: 'Portuguese Heritage Architecture & Coastal Sunset Trails',
-    desc: 'Beyond the golden sands lies Old Goa\'s Latin quarters, vibrant night spice markets, and serene riverine estuaries.',
+    desc: 'Goa is known for its beautiful coastline, beaches, Portuguese-influenced architecture, local food and relaxed atmosphere.',
     food: 'Goan Fish Curry Rice, Pork Vindaloo, Bebinca Dessert',
     places: 'Fontainhas Heritage Quarter, Palolem Cliff Trails, Anjuna Flea Market',
     exp: 'Sunrise Paddleboarding, Colonial House Architectural Tour, Coastal Spice Tasting',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuA6oEBZ-KDnA9Dn3UWuBTH6PgoCxA2ZpWU1tTUdl7GcmuCaX6VLCh7IurnRGygSmWUXU9Flj8R_sCSQDQOyzheJX9t8ZajW-8cbc062d633ca04a5ae2a806a5947184',
-    videoId: '3CznVyzPm_M'
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuDTKlMUVJs5CW0qdr0i4g1b8GxNa705yFpSLaVwNe1vphO1xjqEymsWXsDYG-zbW184S4zI7doawe8-WynyRxFvtGvjLPsb-994da734d2052fe1ff35994a9d8d6a4b',
+    videoId: 'z_8Gzjx3s_Q'
+  },
+  kerala: {
+    name: 'Kerala',
+    title: 'Kerala Sadya & Backwater Serenity',
+    tag: 'Tropical Backwaters & Traditional Sadya Feast',
+    desc: 'Known as God\'s Own Country, Kerala blends lush palm-lined backwaters, coconut groves, and traditional banana leaf Sadya feasts.',
+    food: 'Traditional Kerala Sadya, Karimeen Pollichathu, Woodfire Cardamom Chai',
+    places: 'Munnar Tea Trails, Alleppey Houseboat Canals, Fort Kochi Spice Streets',
+    exp: 'Overnight Houseboat Drift, Sunrise Cloud Inversion Trek, Spice Plantation Walk',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+    videoId: '9NH5EfKGqgQ'
+  },
+  wayanad: {
+    name: 'Wayanad',
+    title: 'Wayanad — Rainforests & Ancient Caves',
+    tag: 'Lush Spice Plantations & Mist-Clad Valleys',
+    desc: 'Wayanad captivates travellers with dense mist-clad forests, ancient Edakkal caves, spice plantations and scenic mountain lakes.',
+    food: 'Bamboo Rice Payasam, Malabar Parotta with Pepper Chicken, Herbal Spiced Teas',
+    places: 'Edakkal Caves, Chembra Peak, Banasura Sagar Dam, Kuruva Island',
+    exp: 'Spice Plantation Walk, Heart Lake Trek, Rainforest Zip Lining',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+    videoId: 'Pj15eX2yL-0'
+  },
+  alleppey: {
+    name: 'Alleppey',
+    title: 'Alleppey — Venice of the East',
+    tag: 'Emerald Backwater Lagoons & Houseboats',
+    desc: 'Alleppey is world-renowned for its tranquil backwaters, traditional Kettuvallam houseboats, coconut palm fringes and paddy fields.',
+    food: 'Karimeen Pollichathu, Toddy Shop Fish Curry, Puttu & Kadala Curry',
+    places: 'Vembanad Lake, Punnamada Kayal, Alleppey Beach, Marari Beach',
+    exp: 'Overnight Houseboat Cruise, Village Canoe Tour, Sunset Lake Kayaking',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCGpMrj02jB5oZ8woDp1pDG1KYzKZnUksg0jPmxZAg-ZuhekRvLjZ_ySpK9Y067sfnHkzNkdg3qJPv4bnRFf-zicUpB8_pj-7a11c56d8eaa116b93cd26d5efbf5e9f',
+    videoId: 'MhLpHW_0KBA'
+  },
+  kochi: {
+    name: 'Kochi',
+    title: 'Kochi — Queen of the Arabian Sea',
+    tag: 'Historic Port City & Culinary Crossroads',
+    desc: 'Fort Kochi blends Chinese fishing nets, Portuguese churches, Dutch heritage palaces, and modern art spaces in a vibrant coastal setting.',
+    food: 'Kerala Sadya, Fort Kochi Seafood Fry, Sulaimani Tea, Mattancherry Sweets',
+    places: 'Chinese Fishing Nets, St. Francis Church, Mattancherry Palace, Jew Town',
+    exp: 'Sunset Promenade Walk, Heritage Bike Tour, Spice Market Exploration',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    videoId: 'okQ2Wr6GPXg'
   },
   rajasthan: {
     name: 'Rajasthan',
@@ -825,7 +782,7 @@ const destinationData = {
     food: 'Dal Baati Churma, Laal Maas, Ghevar, Ker Sangri',
     places: 'Amber Fort Jaipur, City Palace Udaipur, Jaisalmer Sand Dunes',
     exp: 'Camel Desert Safari, Royal Palace Heritage Stay, Folk Dance Evening',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
     videoId: 'w8f2aYk57qU'
   },
   manali: {
@@ -836,7 +793,7 @@ const destinationData = {
     food: 'Siddu, Trout Fish, Pahadi Kadhi, Fresh Apple Cider',
     places: 'Solang Valley Snow Point, Hadimba Temple, Old Manali Cafes',
     exp: 'Snow Paragliding, Atal Tunnel Drive, Riverside Camping',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuBMA8WwnX_pezkKJcxpZf1nN02-MUNpa6TqMzrvtasG8VAi0mZxmLgA0hS8tuuU4A-udD2q68-V6RYyjpcKGZaB-3w8rEAl-ddd3c9a6afc05624b9560d9cff5aa526',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuBMA8WwnX_pezkKJcxpZf1nN02-MUNpa6TqMzrvtasG8VAi0mZxmLgA0hS8tuuU4A-udD2q68-V6RYyjpcKGZaB-3w8rEAl-ddd3c9a6afc05624b9560d9cff5aa526',
     videoId: 'g92X1zO6R5w'
   },
   kashmir: {
@@ -847,7 +804,7 @@ const destinationData = {
     food: 'Kashmiri Wazwan, Rogan Josh, Kahwa Tea, Shufta',
     places: 'Dal Lake Srinagar, Gulmarg Gondola Cable Car, Betaab Valley Pahalgam',
     exp: 'Shikara Sunset Ride, Snow Skiing in Gulmarg, Saffron Harvest Walk',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
     videoId: 'v64KOxKVLVg'
   },
   mumbai: {
@@ -858,7 +815,7 @@ const destinationData = {
     food: 'Vada Pav, Mumbai Pav Bhaji, Chowpatty Bhel Puri, Irani Chai',
     places: 'Gateway of India, Marine Drive Promenade, Colaba Causeway',
     exp: 'Marine Drive Sunset Stroll, Heritage Art District Walk, Midnight Street Food Crawl',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
     videoId: 'Pz3_O8h5rX4'
   },
   delhi: {
@@ -869,7 +826,7 @@ const destinationData = {
     food: 'Chandni Chowk Paranthe, Butter Chicken, Chole Bhature, Rabri Jalebi',
     places: 'Red Fort, Qutub Minar, Humayun\'s Tomb, Chandni Chowk Spice Market',
     exp: 'Rickshaw Tour through Old Delhi, Heritage Garden Stroll, Night Food Trail',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
     videoId: '0aZ9a-O719A'
   },
   tamilnadu: {
@@ -880,7 +837,7 @@ const destinationData = {
     food: 'Chettinad Pepper Chicken, Filter Coffee, Madurai Jigarthanda, Dosa',
     places: 'Meenakshi Temple Madurai, Shore Temple Mahabalipuram, Nilgiri Mountain Railway',
     exp: 'Sunrise Temple Chanting, Heritage Toy Train Ride in Ooty, Coastal Sculpture Tour',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
     videoId: '76XW55n90w8'
   },
   bali: {
@@ -891,7 +848,7 @@ const destinationData = {
     food: 'Nasi Goreng, Babi Guling, Fresh Dragonfruit Acai Bowls',
     places: 'Ubud Tegallalang Rice Terraces, Uluwatu Temple Cliffs, Canggu Coastal Trail',
     exp: 'Dawn Volcano Trek at Mount Batur, Waterfall Canyoning, Organic Farm Dining',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuBMA8WwnX_pezkKJcxpZf1nN02-MUNpa6TqMzrvtasG8VAi0mZxmLgA0hS8tuuU4A-udD2q68-V6RYyjpcKGZaB-3w8rEAl-ddd3c9a6afc05624b9560d9cff5aa526',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuBMA8WwnX_pezkKJcxpZf1nN02-MUNpa6TqMzrvtasG8VAi0mZxmLgA0hS8tuuU4A-udD2q68-V6RYyjpcKGZaB-3w8rEAl-ddd3c9a6afc05624b9560d9cff5aa526',
     videoId: 'lcU3p-6c6R0'
   },
   dubai: {
@@ -902,7 +859,7 @@ const destinationData = {
     food: 'Al Machboos, Shawarma, Camel Milk Gelato, Kunafa',
     places: 'Old Dubai Deira Spice Souk, Desert Conservation Reserve, Museum of the Future',
     exp: 'Sunset Desert Safari, Dhow Dinner Cruise, Old Town Culinary Walk',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
     videoId: 'a7G6J0XvXJg'
   },
   tokyo: {
@@ -913,7 +870,7 @@ const destinationData = {
     food: 'Tonkotsu Ramen, Tsukiji Fresh Sushi, Matcha Parfait, Yakitori',
     places: 'Shinjuku Omoide Yokocho Alleys, Senso-ji Temple, Shibuya Crossing',
     exp: 'Late Night Alleyway Food Safari, Traditional Tea Ceremony, Tsukiji Fish Market Dawn Walk',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
     videoId: '406Wv-4a7b0'
   },
   paris: {
@@ -924,7 +881,7 @@ const destinationData = {
     food: 'Fresh Butter Croissants, Escargots, Duck Confit, Artisan Macarons',
     places: 'Montmartre Artists Square, Seine River Promenade, Le Marais Cafes',
     exp: 'Sunset Seine River Walk, Artisan Pastry Workshop, Louvre Midnight View',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAshIJrQYd_jr0JyjDXKGNuu2-l3IMjWYz8RxX4Rn_bvK9d4vfW--LASyhU4yqbgsb4RLFL6fpq-Y8uq5WQ0NAGB4AUKdb5-c7bd87b3e0af2573df4614d99552590d',
     videoId: 'AQ6GmpMu5C8'
   }
 };
@@ -1144,59 +1101,77 @@ function initArticleFilters() {
 
 const articleData = {
   'munnar-fog': {
-    title: 'The Art of Slow Travel in Munnar: How 4:30 AM Fog Taught Me Patience',
-    category: 'Travel Reflection',
+    title: 'Munnar – The Misty Hills of Kerala',
+    category: 'Travel Guide',
     date: 'Sept 2026',
     readTime: '6 min read',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
-    quote: '"Travel isn\'t about ticking off landmarks on a map—it is about surrendering your schedule to the morning mist."',
-    videoId: 'tCnc7fKwe-E',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+    quote: '"Nestled in the Western Ghats of Kerala at around 1,600 metres above sea level, Munnar is famous for mist-covered mountains, tea plantations, and peaceful valleys."',
+    videoId: 'okQ2Wr6GPXg',
     body: `
       <p class="font-headline text-lg text-amber-200 font-normal leading-relaxed">
-        The air in Munnar at 4:30 AM smells of damp eucalyptus, woodsmoke, and bruised cardamom leaves. Standing at Lockhart Gap, waiting for dawn, you don't see the mountain range right away. You feel it.
+        Nestled in the Western Ghats of Kerala, Munnar is one of South India’s most beautiful hill stations. Located in Idukki district at around 1,600 metres above sea level, Munnar is famous for its mist-covered mountains, endless tea plantations, waterfalls and peaceful valleys.
       </p>
       <p>
-        In modern travel culture, we are trained to chase instant views: snap the sunset, film the drone shot, move to the next pin on Google Maps. But the tea mountains of Kerala refuse to operate on human schedules. Here, clouds drift on their own terms.
+        The landscape of Munnar is covered with beautiful green tea gardens that stretch across the hills. Visitors can explore the tea plantations, learn about the history of tea production at the Tea Museum, and enjoy panoramic views of the surrounding mountains.
       </p>
-      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">The Silence of Lockhart Gap</h3>
+      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Eravikulam National Park &amp; Neelakurinji</h3>
       <p>
-        As the first golden light breaks through the mountain gap, local estate workers move rhythmically along the terraced tea slopes with woven baskets strapped across their foreheads. Watching them work with precise grace brought me a deep sense of calm that no hotel resort could ever replicate.
+        Munnar is also home to Eravikulam National Park, which is known for the endangered Nilgiri Tahr and the famous Neelakurinji flower. Other popular places around Munnar include Mattupetty Dam, Echo Point, Top Station, Chinnakanal and Anayirangal.
+      </p>
+      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Nature &amp; Scenic Trails</h3>
+      <p>
+        For travellers who enjoy nature, Munnar offers opportunities to explore forests, waterfalls, viewpoints and scenic trails. The combination of cool mountain air, green landscapes and misty mornings makes the destination especially attractive for a relaxing getaway.
       </p>
       <p>
-        At a small roadside tea stall constructed from bamboo and iron sheets, an elderly man named Kuttan Chettan poured fresh cardamom chai between two glass tumblers. He crushed green cardamom pods grown just 20 meters down the hill right into the boiling kettle.
+        Whether you're travelling for the scenery, tea plantations, wildlife or simply a peaceful escape from busy city life, Munnar offers a memorable experience in the heart of Kerala's mountains.
       </p>
-      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Veyra Trails Advice for Slow Travelers</h3>
-      <p>
-        If you visit Munnar, skip the crowded viewpoint parking lots. Wake up while the stars are still sharp in the sky, walk down the old British colonial bridle trails, and sit softly with a steaming glass of chai. The mist will speak to you if you give it time.
-      </p>
+      <h3 class="font-headline text-xl text-amber-300 font-light mt-6 mb-2">📍 Highlights</h3>
+      <ul class="space-y-1 text-sm text-white/90 font-light">
+        <li>🌿 Vast tea plantations</li>
+        <li>⛰️ Misty Western Ghats</li>
+        <li>🐐 Eravikulam National Park</li>
+        <li>💧 Scenic waterfalls</li>
+        <li>🌄 Top Station viewpoints</li>
+        <li>🚣 Mattupetty and Anayirangal</li>
+        <li>🍵 Tea Museum and tea experiences</li>
+        <li>🌸 Neelakurinji landscapes</li>
+      </ul>
     `
   },
   'kerala-sadya': {
-    title: 'Decoding the 24 Dishes of Kerala’s Banana Leaf Sadya',
+    title: 'Kerala Sadya – A Feast of Flavours',
     category: 'Culinary History',
     date: 'Aug 2026',
     readTime: '8 min read',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
-    quote: '"Every curry placement on a banana leaf follows ancient Ayurvedic geometry—sour at the narrow tip, sweet at the center, and savory at the base."',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+    quote: '"Kerala Sadya is a grand vegetarian feast served on a fresh banana leaf that brings together a wide variety of flavours, colours and textures."',
     videoId: '9NH5EfKGqgQ',
     body: `
       <p class="font-headline text-lg text-amber-200 font-normal leading-relaxed">
-        To eat a traditional Sadya is to partake in a living culinary ritual that spans centuries. Served on a vibrant green, freshly cut banana leaf, this plant-based feast brings together up to 28 distinct dishes.
+        Kerala Sadya is one of the most celebrated traditional dishes of Kerala. More than just a meal, Sadya is a grand vegetarian feast that brings together a wide variety of flavours, colours and textures. It is traditionally served on a fresh banana leaf and is especially associated with festivals, weddings and other celebrations.
       </p>
       <p>
-        The leaf itself is laid with its tapered tip pointing to the left of the diner. Every dish has a precise geometric position ordained by Ayurvedic principles to aid digestion and harmonize the six fundamental tastes (*Shadrasa*).
+        A traditional Sadya can include numerous dishes such as Parippu, Sambar, Avial, Thoran, Olan, Kaalan, Pachadi, Kichadi, pickles, banana chips and Pappadam. The dishes are arranged and served in a traditional order, creating a unique dining experience.
       </p>
-      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Symphony of Flavors</h3>
+      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Payasam – The Sweet Finale</h3>
       <p>
-        The journey begins with crispy banana chips (*Upperi*) fried in golden unrefined coconut oil, followed by *Sharkara Varatti* (jaggery-coated banana chunks spiced with dried ginger). Next comes *Inji Puli*—a sweet, spicy, and sour ginger-tamarind reduction affectionately called the "100-curry equivalent" for its digestive punch.
+        One of the highlights of Sadya is Payasam, a traditional Kerala dessert. Popular varieties include Palada Payasam, Ada Pradhaman and Parippu Payasam. The sweet dessert is often served along with ripe banana and completes the festive meal.
+      </p>
+      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">Onam &amp; Cultural Heritage</h3>
+      <p>
+        Sadya is particularly important during Onam, when the traditional Onasadya becomes a major part of the celebrations. Families and communities come together to prepare and enjoy the feast, making it a symbol of celebration, hospitality and togetherness.
       </p>
       <p>
-        Rich red Matta rice is served with steaming *Parippu* ghee dal, followed by coconut-laden *Avial*, *Thoran*, and soothing white gourd *Olan*. The meal reaches its crescendo with rich *Ada Pradhaman* (rice pasta boiled in thick coconut milk and jaggery).
+        From the colourful banana leaf to the variety of curries and the final serving of Payasam, Kerala Sadya offers visitors a delicious way to experience the food and cultural traditions of Kerala.
       </p>
-      <h3 class="font-headline text-xl text-white font-light mt-6 mb-2">The Etiquette of Folding the Leaf</h3>
-      <p>
-        When you complete your meal, fold the banana leaf top-to-bottom toward yourself. This subtle gesture signals absolute satisfaction and respect to your hosts and cooks.
-      </p>
+      <div class="mt-6 p-4 bg-white/10 rounded-xl border border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h4 class="font-headline text-base text-amber-300">🍃 Official Kerala Tourism Guide</h4>
+          <p class="text-xs text-white/80">For more information about the traditional Sadya, ingredients and serving style, visit Kerala Tourism.</p>
+        </div>
+        <a href="https://www.keralatourism.org/kerala-food/sadya/" target="_blank" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold text-xs rounded-full transition-colors shrink-0">Visit Kerala Tourism</a>
+      </div>
     `
   },
   'tokyo-ramen': {
@@ -1204,7 +1179,7 @@ const articleData = {
     category: 'Food Guide',
     date: 'July 2026',
     readTime: '5 min read',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
     quote: '"Stepping through a red noren curtain into a 6-seat wooden alley counter is the ultimate Tokyo nocturnal ritual."',
     videoId: '406Wv-4a7b0',
     body: `
@@ -1227,7 +1202,7 @@ const articleData = {
     category: 'Expedition Journal',
     date: 'June 2026',
     readTime: '7 min read',
-    img: 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
     quote: '"The desert silence at night in the Arabian dunes makes the buzzing metropolis feel lightyears away."',
     videoId: 'a7G6J0XvXJg',
     body: `
@@ -1247,6 +1222,69 @@ const articleData = {
     `
   }
 };
+
+async function loadPublicArticles() {
+  const container = document.getElementById('public-articles-grid') || document.querySelector('#articles .grid');
+  try {
+    const res = await fetch('/api/public/articles');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.success || !data.articles || data.articles.length === 0) return;
+
+    const articles = data.articles;
+    window.fetchedArticles = articles;
+
+    articles.forEach(art => {
+      articleData[art.id] = {
+        title: art.title,
+        category: art.category || 'Travel',
+        date: art.date || 'Sept 2026',
+        readTime: art.read_time || '5 min read',
+        img: art.image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+        quote: art.quote || `"${art.title}"`,
+        videoId: art.video_id || extractYouTubeId(art.video_id) || 'Z4yM3xERGvA',
+        body: art.content ? art.content.split('\n\n').map(p => `<p class="mb-4">${escapeHtml(p)}</p>`).join('') : `<p>${escapeHtml(art.description)}</p>`
+      };
+    });
+
+    if (container) {
+      container.innerHTML = articles.map(a => `
+        <div class="article-card-item flex flex-col group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all tilt-card cursor-pointer border border-outline-variant/30" 
+             data-article-id="${escapeHtml(a.id)}" 
+             data-category="${escapeHtml((a.category || 'Travel').toLowerCase())}">
+          <div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container-high">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 tilt-card-img" 
+                 alt="${escapeHtml(a.title)}" 
+                 src="${escapeHtml(a.image)}">
+            <span class="absolute top-4 left-4 px-3 py-1 bg-surface/90 backdrop-blur text-[10px] tracking-[0.2em] uppercase font-medium text-on-surface rounded">${escapeHtml(a.category || 'Travel')}</span>
+          </div>
+          <div class="p-6 flex flex-col justify-between flex-1 gap-4">
+            <div class="flex items-center justify-between text-[10px] tracking-[0.2em] uppercase text-outline font-medium">
+              <span>${escapeHtml(a.date || 'Sept 2026')} • ${escapeHtml(a.read_time || '5 min read')}</span>
+              <span class="text-primary font-semibold">By Veyra Trails</span>
+            </div>
+            <h3 class="font-headline text-2xl font-light text-on-surface group-hover:text-primary transition-colors">
+              ${escapeHtml(a.title)}
+            </h3>
+            <p class="text-xs text-on-surface-variant font-light leading-relaxed line-clamp-3">
+              ${escapeHtml(a.description)}
+            </p>
+            <div class="read-article-btn inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase font-medium text-primary group-hover:text-primary-container transition-colors pt-2">
+              <span>Read Full Article</span>
+              <span class="material-symbols-outlined text-[16px]">menu_book</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      if (typeof init3DTiltCards === 'function') {
+        init3DTiltCards();
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to load public articles from API:', err);
+  }
+}
 
 function initArticleModal() {
   const modal = document.getElementById('article-modal');
@@ -1269,22 +1307,23 @@ function initArticleModal() {
     if (!articleCard) return;
 
     // Ignore clicks if user clicked video play button directly
-    if (e.target.closest('[data-video-id], .play-btn-trigger')) return;
+    if (e.target.closest('.play-btn-trigger') && !e.target.closest('.read-article-btn')) return;
 
     const articleId = articleCard.getAttribute('data-article-id');
     let data = articleData[articleId];
 
-    if (!data && window.VeyraDB) {
-      const dbArt = window.VeyraDB.getById('articles', articleId);
-      if (dbArt) {
+    if (!data && window.fetchedArticles) {
+      const artObj = window.fetchedArticles.find(a => a.id === articleId);
+      if (artObj) {
         data = {
-          title: dbArt.title,
-          category: dbArt.category || 'Travel Essay',
-          date: dbArt.date || 'Today',
-          readTime: dbArt.read_time || dbArt.readTime || '5 min read',
-          img: dbArt.image,
-          quote: dbArt.quote || '',
-          body: `<p class="font-headline text-lg text-amber-200 font-normal leading-relaxed">${dbArt.description}</p><div class="text-xs text-white/90 leading-relaxed font-light mt-4">${(dbArt.content || '').replace(/\n/g, '<br>')}</div>`
+          title: artObj.title,
+          category: artObj.category || 'Travel',
+          date: artObj.date || 'Sept 2026',
+          readTime: artObj.read_time || '5 min read',
+          img: artObj.image,
+          quote: artObj.quote || `"${artObj.title}"`,
+          videoId: artObj.video_id || 'Z4yM3xERGvA',
+          body: artObj.content ? artObj.content.replace(/\n\n/g, '</p><p class="mt-4">').replace(/\n/g, '<br>') : artObj.description
         };
       }
     }
@@ -1292,6 +1331,7 @@ function initArticleModal() {
     if (!data) return;
 
     e.preventDefault();
+    e.stopPropagation();
 
     if (titleEl) titleEl.textContent = data.title;
     if (catEl) catEl.textContent = data.category;
@@ -1302,7 +1342,8 @@ function initArticleModal() {
     if (quoteEl) quoteEl.textContent = data.quote;
 
     if (videoCta) {
-      videoCta.setAttribute('data-video-id', data.videoId);
+      const vId = extractYouTubeId(data.videoId) || data.videoId || 'Z4yM3xERGvA';
+      videoCta.setAttribute('data-video-id', vId);
       videoCta.setAttribute('data-video-title', `${data.title} — Travel Film`);
     }
 
@@ -1313,8 +1354,9 @@ function initArticleModal() {
   // Handle Video CTA click inside article modal
   if (videoCta) {
     videoCta.addEventListener('click', () => {
-      const vId = videoCta.getAttribute('data-video-id') || '5D3cZ-6tGkY';
+      const rawVId = videoCta.getAttribute('data-video-id') || 'Z4yM3xERGvA';
       const vTitle = videoCta.getAttribute('data-video-title') || 'Veyra Trails Travel Vlog';
+      const embedId = extractYouTubeId(rawVId) || rawVId;
 
       // Close article modal
       modal.classList.remove('active');
@@ -1326,9 +1368,9 @@ function initArticleModal() {
       const ytLink = document.getElementById('modal-youtube-link');
 
       if (videoModal && iframe) {
-        iframe.src = `https://www.youtube.com/embed/${vId}?autoplay=1&enablejsapi=1&rel=0`;
+        iframe.src = `https://www.youtube.com/embed/${embedId}?autoplay=1&enablejsapi=1&rel=0`;
         if (videoTitleEl) videoTitleEl.textContent = vTitle;
-        if (ytLink) ytLink.href = `https://www.youtube.com/watch?v=${vId}`;
+        if (ytLink) ytLink.href = `https://www.youtube.com/watch?v=${embedId}`;
         videoModal.classList.add('active');
         document.body.style.overflow = 'hidden';
       }
@@ -1422,4 +1464,61 @@ function initFormHandlers() {
     }
   });
 }
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE MOBILE NAVBAR & DRAWER CONTROLLER
+   -------------------------------------------------------------------------- */
+function initMobileMenu() {
+  const toggleBtn = document.getElementById('mobile-menu-toggle');
+  const closeBtn = document.getElementById('close-mobile-menu-btn');
+  const drawer = document.getElementById('mobile-menu-drawer');
+  const icon = document.getElementById('mobile-hamburger-icon');
+
+  if (!drawer) return;
+
+  const openDrawer = () => {
+    drawer.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    if (icon) icon.textContent = 'close';
+  };
+
+  const closeDrawer = () => {
+    drawer.classList.add('hidden');
+    document.body.style.overflow = '';
+    if (icon) icon.textContent = 'menu';
+  };
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (drawer.classList.contains('hidden')) {
+        openDrawer();
+      } else {
+        closeDrawer();
+      }
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeDrawer();
+    });
+  }
+
+  // Close menu automatically on any navigation link click inside drawer
+  drawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      closeDrawer();
+    });
+  });
+
+  // ESC key to close mobile drawer
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !drawer.classList.contains('hidden')) {
+      closeDrawer();
+    }
+  });
+}
+
 

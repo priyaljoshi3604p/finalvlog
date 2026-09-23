@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veyra Trails — Owner Studio</title>
   <meta name="description" content="Private Owner Control Studio for Veyra Trails.">
-  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 
   <!-- Fonts & Material Symbols matching Public Website EXACTLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +27,7 @@
     
     <!-- LEFT COLUMN: Editorial Travel Image Hero Canvas -->
     <div class="hidden md:flex w-1/2 lg:w-3/5 relative overflow-hidden flex-col justify-between p-12 lg:p-16 bg-black">
-      <img src="../assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404" class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000" alt="Veyra Trails Landscape">
+      <img src="/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404" class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000" alt="Veyra Trails Landscape">
       <div class="absolute inset-0 bg-gradient-to-t from-[#0b0d12] via-[#0b0d12]/50 to-transparent"></div>
 
       <div class="relative z-10 flex items-center gap-3">
@@ -53,7 +52,7 @@
     <div class="w-full md:w-1/2 lg:w-2/5 flex flex-col justify-between p-8 sm:p-12 lg:p-16 bg-gradient-to-b from-[#131622] to-[#0b0d12] relative z-10">
       
       <div class="flex justify-end">
-        <a href="../" class="inline-flex items-center gap-2 text-xs text-white/70 hover:text-white tracking-[0.15em] uppercase font-medium transition-colors">
+        <a href="/" class="inline-flex items-center gap-2 text-xs text-white/70 hover:text-white tracking-[0.15em] uppercase font-medium transition-colors">
           <span class="material-symbols-outlined text-[16px]">arrow_back</span>
           <span>Back to Veyra Trails</span>
         </a>
@@ -181,7 +180,7 @@
 
       <!-- Footer Actions -->
       <div class="pt-4 border-t border-outline-variant/30 space-y-2">
-        <a href="../" target="_blank" class="nav-item text-xs text-primary">
+        <a href="/" target="_blank" class="nav-item text-xs text-primary">
           <span class="material-symbols-outlined text-[18px]">public</span>
           <span>View Website</span>
         </a>
@@ -216,7 +215,7 @@
 
           <!-- Admin Profile Badge -->
           <div class="flex items-center gap-3 pl-3 border-l border-outline-variant/30">
-            <img id="user-avatar" src="../assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d" class="w-8 h-8 rounded-full object-cover border border-primary" alt="Owner Avatar">
+            <img id="user-avatar" src="/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d" class="w-8 h-8 rounded-full object-cover border border-primary" alt="Owner Avatar">
             <div class="hidden sm:block text-left">
               <p id="user-display-name" class="text-xs font-bold text-on-surface leading-tight">Veyra Trails Owner</p>
               <span id="user-role-badge" class="badge-status badge-role-owner">OWNER</span>
@@ -868,126 +867,69 @@
     </div>
   </div>
 
-  <!-- Article / Blog Post Form Modal -->
+  <!-- Article Form Modal -->
   <div id="article-form-modal" class="admin-modal-backdrop">
-    <div class="admin-modal-box max-w-3xl p-6 sm:p-8 space-y-6">
+    <div class="admin-modal-box p-6 sm:p-8 space-y-5">
       <div class="flex items-center justify-between border-b border-black/10 pb-4">
-        <div class="flex items-center gap-3">
-          <button type="button" id="art-back-btn" class="p-1 text-[#494551] hover:text-[#4f378a] rounded-lg transition-colors flex items-center justify-center">
-            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
-          </button>
-          <div>
-            <h3 id="art-modal-title" class="text-xl font-bold text-[#1d1b20] font-headline leading-tight">Write Blog Post</h3>
-            <p class="text-xs text-[#494551] font-light">Create or edit a story for your travel &amp; culinary journal</p>
-          </div>
-        </div>
-        <button type="button" id="close-art-form-btn" class="text-[#79747e] hover:text-[#4f378a]">
+        <h3 id="art-modal-title" class="text-lg font-bold text-[#1d1b20] font-headline">Write Blog Post</h3>
+        <button id="close-art-form-btn" class="text-[#79747e] hover:text-[#4f378a]">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-
-      <form id="article-modal-form" class="space-y-5">
+      <form id="article-modal-form" class="space-y-4">
         <input type="hidden" id="art-id-input">
-        <input type="hidden" id="art-status-input" value="published">
-
-        <!-- Title -->
         <div>
-          <label class="block text-xs font-semibold text-[#494551] mb-1">Blog Title <span class="text-red-500">*</span></label>
-          <input type="text" id="art-title-input" required class="admin-input text-sm font-medium" placeholder="e.g., Chai, Clouds, & Silent Ridges: 48 Hours in Munnar">
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Title</label>
+          <input type="text" id="art-title-input" required class="admin-input">
         </div>
-
-        <!-- Category & Date & Read Time -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Subtitle</label>
+          <input type="text" id="art-sub-input" class="admin-input">
+        </div>
+        <div class="grid grid-cols-3 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-[#494551] mb-1">Category <span class="text-red-500">*</span></label>
-            <select id="art-cat-input" required class="admin-input">
-              <option value="Travel Essay">Travel Essay</option>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Category</label>
+            <select id="art-cat-input" class="admin-input">
+              <option value="Travel Reflection">Travel Reflection</option>
+              <option value="Culinary History">Culinary History</option>
               <option value="Food Guide">Food Guide</option>
-              <option value="Destination">Destination</option>
-              <option value="Travel Tips">Travel Tips</option>
-              <option value="Culture">Culture</option>
-              <option value="Adventure">Adventure</option>
+              <option value="Expedition Journal">Expedition Journal</option>
             </select>
           </div>
-
           <div>
-            <label class="block text-xs font-semibold text-[#494551] mb-1">Publishing Date <span class="text-red-500">*</span></label>
-            <input type="date" id="art-date-input" required class="admin-input">
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Author</label>
+            <input type="text" id="art-author-input" class="admin-input" value="Priyal Joshi">
           </div>
-
           <div>
-            <label class="block text-xs font-semibold text-[#494551] mb-1">Estimated Read Time</label>
-            <input type="text" id="art-readtime-input" class="admin-input" placeholder="e.g., 6 min read">
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Read Time</label>
+            <input type="text" id="art-readtime-input" class="admin-input" placeholder="6 min read">
           </div>
         </div>
-
-        <!-- Cover Image Upload & Preview -->
         <div>
-          <label class="block text-xs font-semibold text-[#494551] mb-1">Cover Image <span class="text-red-500">*</span></label>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
-            <div class="sm:col-span-2 space-y-2">
-              <div class="flex items-center gap-2">
-                <input type="url" id="art-img-input" required class="admin-input text-xs" placeholder="https://images.unsplash.com/... or upload image below">
-              </div>
-              <div class="flex items-center gap-3 pt-1">
-                <label class="inline-flex items-center gap-2 px-3 py-2 bg-purple-50 hover:bg-purple-100 text-[#4f378a] border border-[#4f378a]/30 rounded-lg text-xs font-medium cursor-pointer transition-colors">
-                  <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
-                  <span>Upload Image File</span>
-                  <input type="file" id="art-img-file-input" accept="image/*" class="hidden">
-                </label>
-                <span id="art-file-name" class="text-[11px] text-[#79747e] truncate max-w-[200px]">No file selected</span>
-              </div>
-            </div>
-
-            <!-- Image Preview Box -->
-            <div class="relative aspect-[16/10] bg-purple-50 rounded-xl overflow-hidden border border-black/10 flex items-center justify-center group">
-              <img id="art-img-preview" src="" class="w-full h-full object-cover hidden" alt="Cover Image Preview">
-              <div id="art-img-placeholder" class="text-center p-3 text-[#79747e]">
-                <span class="material-symbols-outlined text-2xl">image</span>
-                <p class="text-[10px] mt-1 font-light">Image Preview</p>
-              </div>
-            </div>
-          </div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Cover Image URL</label>
+          <input type="url" id="art-img-input" required class="admin-input">
         </div>
-
-        <!-- Short Description / Excerpt -->
         <div>
-          <label class="block text-xs font-semibold text-[#494551] mb-1">Short Description / Excerpt <span class="text-red-500">*</span></label>
-          <textarea id="art-desc-input" required class="admin-input h-20 text-xs font-light" placeholder="A captivating summary shown on the Stories list..."></textarea>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Pull Quote</label>
+          <input type="text" id="art-quote-input" class="admin-input">
         </div>
-
-        <!-- Blog Content / Main Article Body -->
         <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-semibold text-[#494551]">Blog Content <span class="text-red-500">*</span></label>
-            <span class="text-[11px] text-[#79747e]">Supports Markdown / HTML text</span>
-          </div>
-          <textarea id="art-content-input" required class="admin-input h-48 text-xs font-mono leading-relaxed" placeholder="Write your complete travel story or culinary article here..."></textarea>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Article Body (HTML / Text)</label>
+          <textarea id="art-body-input" class="admin-input h-36 font-mono text-xs"></textarea>
         </div>
-
-        <!-- Pull Quote (Optional) -->
-        <div>
-          <label class="block text-xs font-semibold text-[#494551] mb-1">Pull Quote (Optional)</label>
-          <input type="text" id="art-quote-input" class="admin-input italic text-xs" placeholder="e.g., &quot;Standing on Lockhart Gap at sunrise feels like watching earth being created anew.&quot;">
+        <div class="flex items-center gap-6 pt-2">
+          <label class="flex items-center gap-2 cursor-pointer text-xs text-[#494551]">
+            <input type="checkbox" id="art-featured-input" class="rounded text-[#4f378a]">
+            <span>Featured</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer text-xs text-[#494551]">
+            <input type="checkbox" id="art-published-input" checked class="rounded text-[#4f378a]">
+            <span>Published</span>
+          </label>
         </div>
-
-        <!-- Status & Actions -->
-        <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-black/10">
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-[#494551] font-medium">Status:</span>
-            <span id="art-status-badge" class="badge-status badge-published">PUBLISHED</span>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
-            <button type="button" id="art-cancel-btn" class="btn-secondary text-xs">Cancel</button>
-            <button type="button" id="art-save-draft-btn" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-full text-xs tracking-wider uppercase transition-colors border border-gray-300">
-              Save Draft
-            </button>
-            <button type="submit" id="art-publish-btn" class="btn-primary text-xs">
-              <span class="material-symbols-outlined text-[16px]">publish</span>
-              <span>Publish</span>
-            </button>
-          </div>
+        <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('article-form-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Blog Post</button>
         </div>
       </form>
     </div>
@@ -1130,6 +1072,69 @@
         <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
           <button type="button" class="btn-secondary" onclick="document.getElementById('team-form-modal').classList.remove('active')">Cancel</button>
           <button type="submit" class="btn-primary">Save Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Article / Blog Post Form Modal -->
+  <div id="article-form-modal" class="admin-modal-backdrop">
+    <div class="admin-modal-box max-w-2xl p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-black/10 pb-4">
+        <h3 id="article-modal-title" class="text-lg font-bold text-[#1d1b20] font-headline">Write Blog Post</h3>
+        <button type="button" onclick="document.getElementById('article-form-modal').classList.remove('active')" class="text-[#79747e] hover:text-[#4f378a]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="article-modal-form" class="space-y-4">
+        <input type="hidden" id="article-id-input">
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Article Title *</label>
+          <input type="text" id="article-title-input" required class="admin-input" placeholder="e.g. Munnar – The Misty Hills of Kerala">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Category *</label>
+            <input type="text" id="article-cat-input" required class="admin-input" placeholder="e.g. Travel or Food / Kerala Cuisine">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Publication Date</label>
+            <input type="text" id="article-date-input" class="admin-input" placeholder="e.g. Sept 2026">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Cover Image URL *</label>
+          <input type="text" id="article-thumb-input" required class="admin-input" placeholder="/assets/... or https://...">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Short Summary / Description *</label>
+          <input type="text" id="article-shortdesc-input" required class="admin-input" placeholder="Brief 1-2 sentence preview summary">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Full Article Content *</label>
+          <textarea id="article-content-input" rows="6" required class="admin-input leading-relaxed" placeholder="Write full article body text..."></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">Related Destination</label>
+            <input type="text" id="article-dest-input" class="admin-input" placeholder="e.g. Munnar, Goa, Wayanad">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#494551] mb-1">YouTube Video Link / ID</label>
+            <input type="text" id="article-youtube-input" class="admin-input" placeholder="https://youtube.com/shorts/... or ID">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#494551] mb-1">Featured Quote / Excerpt</label>
+          <input type="text" id="article-quote-input" class="admin-input" placeholder="Key quote to highlight in full view">
+        </div>
+        <div class="flex items-center gap-2 pt-2">
+          <input type="checkbox" id="article-published-input" checked class="w-4 h-4 text-[#4f378a] rounded border-black/20 focus:ring-[#4f378a]">
+          <label for="article-published-input" class="text-xs font-medium text-[#1d1b20]">Publish publicly on website (uncheck for Draft)</label>
+        </div>
+        <div class="pt-4 flex justify-end gap-3 border-t border-black/10">
+          <button type="button" class="btn-secondary" onclick="document.getElementById('article-form-modal').classList.remove('active')">Cancel</button>
+          <button type="submit" id="save-article-submit-btn" class="btn-primary">Save Article</button>
         </div>
       </form>
     </div>

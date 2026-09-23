@@ -975,365 +975,151 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
 
     try {
-      let articles = [];
-      try {
-        const res = await fetch('/api/admin/articles');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && Array.isArray(data.articles)) {
-            articles = data.articles;
-          }
-        }
-      } catch (e) {
-        console.warn('Backend articles fetch notice, trying VeyraDB fallback:', e);
-      }
+      const res = await fetch('/api/admin/articles');
+      const data = await res.json();
+      if (!data.success) return;
 
-      if ((!articles || articles.length === 0) && window.VeyraDB) {
-        articles = window.VeyraDB.getAll('articles');
-      }
-
-      currentArticles = articles || [];
-
-      // Bind "+ WRITE BLOG POST" button
-      const addBtn = document.getElementById('add-article-btn');
-      if (addBtn && !addBtn.dataset.bound) {
-        addBtn.dataset.bound = 'true';
-        addBtn.addEventListener('click', () => openArticleModal());
-      }
+      currentArticles = data.articles || [];
 
       if (currentArticles.length === 0) {
-        container.innerHTML = `<div class="p-12 text-center text-xs text-[#79747e] bg-white rounded-3xl border border-black/10">No blog posts found. Click "+ Write Blog Post" to create your first article.</div>`;
+        container.innerHTML = `<div class="p-12 text-center text-xs text-[#79747e] bg-white rounded-3xl border border-black/10">No blog posts found in database.</div>`;
         return;
       }
 
       container.innerHTML = currentArticles.map(a => `
         <div class="admin-glass p-5 rounded-2xl bg-white border border-black/10 hover:border-[#4f378a]/40 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex items-center gap-4">
-            <img src="${escapeHtml(a.image)}" class="w-16 h-16 rounded-xl object-cover shrink-0 border border-black/10" alt="${escapeHtml(a.title)}">
+            <img src="${a.image}" class="w-16 h-16 rounded-xl object-cover shrink-0 border border-black/10" alt="${escapeHtml(a.title)}">
             <div>
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] uppercase font-bold text-[#765b00]">${escapeHtml(a.category || 'Travel Essay')} • ${escapeHtml(a.date || 'Today')}</span>
-                ${a.read_time ? `<span class="text-[10px] text-[#79747e]">• ${escapeHtml(a.read_time)}</span>` : ''}
-              </div>
+              <span class="text-[10px] uppercase font-bold text-[#765b00]">${escapeHtml(a.category || 'Travel')} • ${escapeHtml(a.date || 'Sept 2026')}</span>
               <h4 class="text-sm font-bold text-[#1d1b20] leading-tight mt-0.5">${escapeHtml(a.title)}</h4>
               <p class="text-xs text-[#494551] font-light line-clamp-1 mt-1">${escapeHtml(a.description)}</p>
             </div>
           </div>
           <div class="flex items-center gap-3 shrink-0 self-end sm:self-auto">
-            <span class="badge-status badge-${a.status === 'published' || a.published !== false ? 'published' : 'draft'}">${a.status === 'published' || a.published !== false ? 'PUBLISHED' : 'DRAFT'}</span>
-            <button onclick="editArticle('${a.id}')" class="p-1.5 text-[#4f378a] hover:bg-purple-100 rounded-lg transition-colors" title="Edit Blog Post">
+            <span class="badge-status badge-${a.status === 'published' ? 'published' : 'draft'}">${a.status === 'published' ? 'Published' : 'Draft'}</span>
+            <button onclick="editArticle('${a.id}')" class="p-1.5 text-[#4f378a] hover:bg-purple-100 rounded-lg" title="Edit">
               <span class="material-symbols-outlined text-[18px]">edit</span>
             </button>
-            <button onclick="deleteArticle('${a.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete Blog Post">
+            <button onclick="deleteArticle('${a.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg" title="Delete">
               <span class="material-symbols-outlined text-[18px]">delete</span>
             </button>
           </div>
         </div>
       `).join('');
+
+      const addBtn = document.getElementById('add-article-btn');
+      if (addBtn && !addBtn.dataset.bound) {
+        addBtn.dataset.bound = 'true';
+        addBtn.addEventListener('click', () => openArticleModal());
+      }
     } catch (err) {
       container.innerHTML = `<div class="p-8 text-center text-xs text-red-500">Failed to load articles.</div>`;
     }
   }
 
-  function getTodayIsoDate() {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  function updateArticleImagePreview(url) {
-    const previewImg = document.getElementById('art-img-preview');
-    const placeholder = document.getElementById('art-img-placeholder');
-    if (!previewImg || !placeholder) return;
-
-    if (url && url.trim().length > 0) {
-      previewImg.src = url;
-      previewImg.classList.remove('hidden');
-      placeholder.classList.add('hidden');
-    } else {
-      previewImg.src = '';
-      previewImg.classList.add('hidden');
-      placeholder.classList.remove('hidden');
-    }
-  }
-
-  function updateArticleStatusBadge(status) {
-    const badge = document.getElementById('art-status-badge');
-    const statusInput = document.getElementById('art-status-input');
-    if (!badge || !statusInput) return;
-
-    statusInput.value = status;
-    if (status === 'draft') {
-      badge.textContent = 'DRAFT';
-      badge.className = 'badge-status badge-draft';
-    } else {
-      badge.textContent = 'PUBLISHED';
-      badge.className = 'badge-status badge-published';
-    }
-  }
-
-  function openArticleModal(article = null) {
+  function openArticleModal(art = null) {
     const modal = document.getElementById('article-form-modal');
     if (!modal) return;
 
-    const titleEl = document.getElementById('art-modal-title');
-    if (titleEl) titleEl.textContent = article ? 'Edit Blog Post' : 'Write Blog Post';
+    const titleEl = document.getElementById('article-modal-title');
+    if (titleEl) titleEl.textContent = art ? 'Edit Blog Post' : 'Write Blog Post';
 
-    document.getElementById('art-id-input').value = article ? article.id : '';
-    document.getElementById('art-title-input').value = article ? article.title : '';
-    document.getElementById('art-cat-input').value = article ? (article.category || 'Travel Essay') : 'Travel Essay';
-    
-    // Set Date input (default to today if creating new)
-    const dateInput = document.getElementById('art-date-input');
-    if (dateInput) {
-      dateInput.value = article && article.date_iso ? article.date_iso : getTodayIsoDate();
-    }
-
-    document.getElementById('art-readtime-input').value = article ? (article.read_time || '5 min read') : '5 min read';
-    
-    const imgUrl = article ? article.image : '';
-    document.getElementById('art-img-input').value = imgUrl;
-    updateArticleImagePreview(imgUrl);
-
-    document.getElementById('art-desc-input').value = article ? article.description : '';
-    document.getElementById('art-content-input').value = article ? article.content : '';
-    document.getElementById('art-quote-input').value = article ? (article.quote || '') : '';
-
-    const initialStatus = article ? (article.status || 'published') : 'published';
-    updateArticleStatusBadge(initialStatus);
-
-    // Reset file upload field
-    const fileInput = document.getElementById('art-img-file-input');
-    const fileNameEl = document.getElementById('art-file-name');
-    if (fileInput) fileInput.value = '';
-    if (fileNameEl) fileNameEl.textContent = 'No file selected';
+    document.getElementById('article-id-input').value = art ? art.id : '';
+    document.getElementById('article-title-input').value = art ? art.title : '';
+    document.getElementById('article-cat-input').value = art ? art.category : 'Travel';
+    document.getElementById('article-date-input').value = art ? art.date : 'Sept 2026';
+    document.getElementById('article-thumb-input').value = art ? art.image : '';
+    document.getElementById('article-shortdesc-input').value = art ? art.description : '';
+    document.getElementById('article-content-input').value = art ? art.content : '';
+    document.getElementById('article-dest-input').value = art ? (art.destination || '') : '';
+    document.getElementById('article-youtube-input').value = art ? (art.video_id || '') : '';
+    document.getElementById('article-quote-input').value = art ? (art.quote || '') : '';
+    document.getElementById('article-published-input').checked = art ? (art.status === 'published') : true;
 
     modal.classList.add('active');
   }
 
-  function closeArticleModal() {
-    const modal = document.getElementById('article-form-modal');
-    if (modal) modal.classList.remove('active');
-  }
-
-  // Setup Article Modal Listeners (Image preview, file upload, status toggle, form save)
-  function initArticleFormListeners() {
-    const imgUrlInput = document.getElementById('art-img-input');
-    if (imgUrlInput && !imgUrlInput.dataset.bound) {
-      imgUrlInput.dataset.bound = 'true';
-      imgUrlInput.addEventListener('input', (e) => {
-        updateArticleImagePreview(e.target.value);
-      });
-    }
-
-    // Cover Image File Upload Listener
-    const fileInput = document.getElementById('art-img-file-input');
-    if (fileInput && !fileInput.dataset.bound) {
-      fileInput.dataset.bound = 'true';
-      fileInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        const fileNameEl = document.getElementById('art-file-name');
-        if (!file) return;
-
-        if (fileNameEl) fileNameEl.textContent = file.name;
-        showToast('Uploading cover image...', 'info');
-
-        try {
-          const formData = new FormData();
-          formData.append('thumbnail_file', file);
-
-          const uploadRes = await fetch('/api/admin/upload', {
-            method: 'POST',
-            body: formData
-          });
-          const uploadData = await uploadRes.json();
-
-          if (uploadRes.ok && uploadData.success && uploadData.thumbnail) {
-            document.getElementById('art-img-input').value = uploadData.thumbnail;
-            updateArticleImagePreview(uploadData.thumbnail);
-            showToast('Cover image uploaded successfully!', 'success');
-          } else {
-            showToast(uploadData.error || 'Failed to upload cover image.', 'error');
-          }
-        } catch (err) {
-          showToast('Server error uploading image.', 'error');
-        }
-      });
-    }
-
-    // Close / Cancel / Back Buttons
-    const cancelBtn = document.getElementById('art-cancel-btn');
-    const backBtn = document.getElementById('art-back-btn');
-    const closeBtn = document.getElementById('close-art-form-btn');
-
-    [cancelBtn, backBtn, closeBtn].forEach(btn => {
-      if (btn && !btn.dataset.bound) {
-        btn.dataset.bound = 'true';
-        btn.addEventListener('click', () => closeArticleModal());
+  const articleForm = document.getElementById('article-modal-form');
+  if (articleForm) {
+    articleForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('save-article-submit-btn');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[16px] align-middle mr-1">sync</span>Saving...`;
       }
-    });
 
-    // Save Draft Button
-    const saveDraftBtn = document.getElementById('art-save-draft-btn');
-    if (saveDraftBtn && !saveDraftBtn.dataset.bound) {
-      saveDraftBtn.dataset.bound = 'true';
-      saveDraftBtn.addEventListener('click', () => {
-        updateArticleStatusBadge('draft');
-        submitArticleForm();
-      });
-    }
+      const id = document.getElementById('article-id-input').value;
+      const title = document.getElementById('article-title-input').value.trim();
+      const category = document.getElementById('article-cat-input').value.trim();
+      const date = document.getElementById('article-date-input').value.trim() || 'Sept 2026';
+      const image = document.getElementById('article-thumb-input').value.trim();
+      const description = document.getElementById('article-shortdesc-input').value.trim();
+      const content = document.getElementById('article-content-input').value.trim();
+      const video_id = document.getElementById('article-youtube-input').value.trim();
+      const quote = document.getElementById('article-quote-input').value.trim();
+      const status = document.getElementById('article-published-input').checked ? 'published' : 'draft';
 
-    // Article Form Submit (Publish or Save Draft)
-    const artForm = document.getElementById('article-modal-form');
-    if (artForm && !artForm.dataset.bound) {
-      artForm.dataset.bound = 'true';
-      artForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitArticleForm();
-      });
-    }
-  }
+      const payload = { id, title, category, date, image, description, content, video_id, quote, status };
 
-  async function submitArticleForm() {
-    const id = document.getElementById('art-id-input').value;
-    const title = document.getElementById('art-title-input').value.trim();
-    const category = document.getElementById('art-cat-input').value;
-    const date_iso = document.getElementById('art-date-input').value;
-    const read_time = document.getElementById('art-readtime-input').value.trim() || '5 min read';
-    let image = document.getElementById('art-img-input').value.trim();
-    const description = document.getElementById('art-desc-input').value.trim();
-    const content = document.getElementById('art-content-input').value.trim();
-    const quote = document.getElementById('art-quote-input').value.trim();
-    const status = document.getElementById('art-status-input').value || 'published';
-
-    if (!title || !description || !content) {
-      showToast('Please fill in all required fields (Title, Excerpt, Content).', 'error');
-      return;
-    }
-
-    // Format readable date display
-    let dateDisplay = 'Today';
-    if (date_iso) {
       try {
-        const parts = date_iso.split('-');
-        const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-        dateDisplay = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      } catch (e) {
-        dateDisplay = date_iso;
-      }
-    }
-
-    const defaultCover = 'assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
-
-    const payload = {
-      title,
-      description,
-      content,
-      image: image || defaultCover,
-      category,
-      read_time,
-      date: dateDisplay,
-      date_iso,
-      quote,
-      status
-    };
-
-    try {
-      let res;
-      let articleId = id;
-      if (id) {
-        res = await fetch(`/api/admin/articles/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } else {
-        res = await fetch('/api/admin/articles', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      }
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        if (data.articleId) articleId = data.articleId;
-
-        // Also save to VeyraDB local state for instant client sync
-        if (window.VeyraDB) {
-          window.VeyraDB.save('articles', {
-            id: articleId || ('art_' + Date.now()),
-            ...payload,
-            published: status === 'published'
+        let res;
+        if (id) {
+          res = await fetch(`/api/admin/articles/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          res = await fetch('/api/admin/articles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
           });
         }
-
-        showToast(status === 'draft' ? 'Blog post saved as Draft!' : 'Blog post published successfully!', 'success');
-        closeArticleModal();
-        renderArticles();
-        renderDashboard();
-      } else {
-        // Fallback to VeyraDB saving if server session error
-        if (window.VeyraDB) {
-          window.VeyraDB.save('articles', {
-            id: id || ('art_' + Date.now()),
-            ...payload,
-            published: status === 'published'
-          });
-          showToast(status === 'draft' ? 'Blog post saved as Draft (Local State)' : 'Blog post published successfully! (Local State)', 'success');
-          closeArticleModal();
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast(id ? 'Article updated successfully!' : 'Article published to website!', 'success');
+          document.getElementById('article-form-modal').classList.remove('active');
           renderArticles();
           renderDashboard();
         } else {
-          showToast(data.error || 'Failed to save blog post.', 'error');
+          showToast(data.error || 'Failed to save article', 'error');
+        }
+      } catch (err) {
+        showToast('Error saving article.', 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Save Article';
         }
       }
-    } catch (err) {
-      console.error('Error saving article:', err);
-      if (window.VeyraDB) {
-        window.VeyraDB.save('articles', {
-          id: id || ('art_' + Date.now()),
-          ...payload,
-          published: status === 'published'
-        });
-        showToast('Saved to local storage.', 'success');
-        closeArticleModal();
-        renderArticles();
-        renderDashboard();
-      } else {
-        showToast('Server error saving blog post.', 'error');
-      }
-    }
+    });
   }
-
-  // Initialize Article Modal Form Event Listeners
-  initArticleFormListeners();
 
   window.editArticle = function(id) {
     const a = currentArticles.find(item => item.id === id);
-    if (a) {
-      openArticleModal(a);
-    }
+    if (a) openArticleModal(a);
   };
 
   window.deleteArticle = function(id) {
-    openConfirmModal('Delete Blog Post', `Are you sure you want to delete this blog post? This action cannot be undone.`, 'Delete', async () => {
-      if (window.VeyraDB) {
-        window.VeyraDB.delete('articles', id);
-      }
+    openConfirmModal('Delete Article', `Are you sure you want to delete blog post "${id}" from the database?`, 'Delete', async () => {
       try {
         const res = await fetch(`/api/admin/articles/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-          showToast('Blog post deleted successfully.', 'info');
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('Blog post deleted', 'info');
+          renderArticles();
+          renderDashboard();
+        } else {
+          showToast(data.error || 'Failed to delete article', 'error');
         }
-      } catch (err) {}
-      renderArticles();
-      renderDashboard();
+      } catch (err) {
+        showToast('Error deleting article.', 'error');
+      }
     });
   };
-
 
   /* --------------------------------------------------------------------------
      9. SETTINGS & CONTACT FORMS CONTROLLER
