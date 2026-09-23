@@ -915,27 +915,29 @@ const destinationData = {
 };
 
 function getActiveDestinationData() {
+  const map = { ...destinationData };
   if (window.VeyraDB) {
     const publishedDests = window.VeyraDB.getPublished('destinations');
     if (publishedDests && publishedDests.length > 0) {
-      const map = {};
       publishedDests.forEach(d => {
-        map[d.id] = {
-          name: d.name,
-          title: d.title || `${d.name}, ${d.country || ''}`,
-          tag: d.tag || d.shortDesc,
-          desc: d.longDesc || d.shortDesc,
-          food: d.food || 'Local authentic regional specialties',
-          places: d.places || 'Top heritage sights & nature trails',
-          exp: d.exp || 'Curated local experiences',
-          img: d.heroImage || d.img,
-          videoId: d.videoId || extractYouTubeId(d.videoUrl) || '5D3cZ-6tGkY'
-        };
+        const key = (d.id || d.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (key) {
+          map[key] = {
+            name: d.name || d.title,
+            title: d.title || `${d.name || 'Destination'}, ${d.country || 'Travel'}`,
+            tag: d.tag || d.shortDesc || 'Curated Experience',
+            desc: d.longDesc || d.shortDesc || d.description || map[key]?.desc || '',
+            food: d.food || map[key]?.food || 'Local authentic regional specialties',
+            places: d.places || map[key]?.places || 'Top heritage sights & nature trails',
+            exp: d.exp || d.experiences || map[key]?.exp || 'Curated local experiences',
+            img: d.heroImage || d.image || d.img || map[key]?.img,
+            videoId: d.videoId || extractYouTubeId(d.video_url || d.videoUrl) || map[key]?.videoId || '5D3cZ-6tGkY'
+          };
+        }
       });
-      return map;
     }
   }
-  return destinationData;
+  return map;
 }
 
 function initDestinationExplorer() {
