@@ -807,28 +807,28 @@ function seedDefaultData() {
     const initialArticles = [
       {
         id: 'munnar-fog',
-        title: 'Chai, Clouds, & Silent Ridges: 48 Hours in Munnar’s Tea Estates',
-        description: 'Waking up at 4:30 AM to catch cloud inversions over Lockhart Gap, sipping steaming cardamom tea from roadside wooden stalls.',
-        content: 'Waking up at 4:30 AM to catch cloud inversions over Lockhart Gap, sipping steaming cardamom tea from roadside wooden stalls. The high-altitude tea gardens of Munnar stretch across rolling hills like emerald tapestry.',
-        image: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
-        category: 'Travel Essay',
+        title: 'The Art of Slow Travel in Munnar: How 4:30 AM Fog Taught Me Patience',
+        description: 'Waking up before dawn at Lockhart Gap, watching thick white clouds roll across colonial tea slopes, I realized travel isn\'t about ticking places off a list—it\'s about listening to the quiet rhythms of the earth.',
+        content: 'The air in Munnar at 4:30 AM smells of damp eucalyptus, woodsmoke, and bruised cardamom leaves. Standing at Lockhart Gap, waiting for dawn, you don\'t see the mountain range right away. You feel it. In modern travel culture, we are trained to chase instant views. But the tea mountains of Kerala refuse to operate on human schedules.',
+        image: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+        category: 'Travel Reflection',
         read_time: '6 min read',
         date: 'Sept 2026',
         video_id: '5D3cZ-6tGkY',
-        quote: '"Standing on Lockhart Gap at sunrise feels like watching earth being created anew out of morning mist."',
+        quote: '"Travel isn\'t about ticking off landmarks on a map—it is about surrendering your schedule to the morning mist."',
         status: 'published'
       },
       {
-        id: 'goa-food',
-        title: 'Beyond the Beaches: Fontainhas Latin Quarter & Goan Spice Trails',
-        description: 'Past Portuguese heritage house facades, yellow stucco walls, and wooden shutters lies Fontainhas.',
-        content: 'Past Portuguese heritage house facades, yellow stucco walls, and wooden shutters lies Fontainhas. Here, traditional Goan fish curry rice and coconut bebinca cakes carry centuries of colonial spice trade history.',
-        image: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuDTKlMUVJs5CW0qdr0i4g1b8GxNa705yFpSLaVwNe1vphO1xjqEymsWXsDYG-zbW184S4zI7doawe8-WynyRxFvtGvjLPsb-994da734d2052fe1ff35994a9d8d6a4b',
-        category: 'Food Guide',
+        id: 'kerala-sadya',
+        title: 'Decoding the 24 Dishes of Kerala’s Banana Leaf Sadya',
+        description: 'From crisp banana chips fried in golden coconut oil to tangy Inji Puli and creamy Payasam, the traditional feast is a masterclass in ancient Ayurvedic flavor balancing.',
+        content: 'To eat a traditional Sadya is to partake in a living culinary ritual that spans centuries. Served on a vibrant green, freshly cut banana leaf, this plant-based feast brings together up to 28 distinct dishes. Every dish has a precise geometric position ordained by Ayurvedic principles to aid digestion and harmonize flavors.',
+        image: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCQaZah9USED6VtRLFcaESDDe1hhrhwnCe8XJ29ypZ4CsFxDAwGlLTXs1FC50oSjjvqkPuyBR5QFEjR1V6XBnsMjGn5KqVz-0a930619be67565aa64f3dd2a061d204',
+        category: 'Culinary History',
         read_time: '8 min read',
-        date: 'August 2026',
-        video_id: '3CznVyzPm_M',
-        quote: '"Goan spice gardens smell of cinnamon bark, nutmeg, and black pepper dried in salt sea breeze."',
+        date: 'Aug 2026',
+        video_id: '9NH5EfKGqgQ',
+        quote: '"Every curry placement on a banana leaf follows ancient Ayurvedic geometry—sour at the narrow tip, sweet at the center, and savory at the base."',
         status: 'published'
       },
       {
@@ -842,6 +842,32 @@ function seedDefaultData() {
         date: 'July 2026',
         video_id: 'a7G6J0XvXJg',
         quote: '"In a 6-seat ramen alley, the only sound is slurping noodles and steam rising off hot bone broth."',
+        status: 'published'
+      },
+      {
+        id: 'dubai-desert',
+        title: 'Desert Solitude: Sunset Camping Beyond Dubai\'s Skyline',
+        description: 'Leaving behind the towering glass skyscrapers of Downtown Dubai for the quiet golden dunes of the Arabian Desert revealed an ancient side of Emirates culture.',
+        content: 'Driving just 45 minutes past Downtown Dubai\'s Burj Khalifa brings you into a vast expanse of shifting golden dunes where wind ripples shape the landscape continuously. As the sun sets, the sand turns from warm amber to deep crimson, and the desert sky transforms into an endless sea of stars.',
+        image: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuCXNOPI_dxPjVZx369fnolWt_YodLRcFg5o_XFJgyg9uKdOuzw-dwjcSMiynd6SWcptie-TsHq8US1SSOa2eRfrFGAqjIKS-9227465da0dc969f961ab80219cdad26',
+        category: 'Expedition Journal',
+        read_time: '7 min read',
+        date: 'June 2026',
+        video_id: 'a7G6J0XvXJg',
+        quote: '"The desert silence at night in the Arabian dunes makes the buzzing metropolis feel lightyears away."',
+        status: 'published'
+      },
+      {
+        id: 'goa-food',
+        title: 'Beyond the Beaches: Fontainhas Latin Quarter & Goan Spice Trails',
+        description: 'Past Portuguese heritage house facades, yellow stucco walls, and wooden shutters lies Fontainhas.',
+        content: 'Past Portuguese heritage house facades, yellow stucco walls, and wooden shutters lies Fontainhas. Here, traditional Goan fish curry rice and coconut bebinca cakes carry centuries of colonial spice trade history.',
+        image: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuDTKlMUVJs5CW0qdr0i4g1b8GxNa705yFpSLaVwNe1vphO1xjqEymsWXsDYG-zbW184S4zI7doawe8-WynyRxFvtGvjLPsb-994da734d2052fe1ff35994a9d8d6a4b',
+        category: 'Food Guide',
+        read_time: '8 min read',
+        date: 'August 2026',
+        video_id: '3CznVyzPm_M',
+        quote: '"Goan spice gardens smell of cinnamon bark, nutmeg, and black pepper dried in salt sea breeze."',
         status: 'published'
       }
     ];
