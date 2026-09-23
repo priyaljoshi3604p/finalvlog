@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initReelsInteractions();
   initFormHandlers();
   initMobileMenu();
+  initAppRouter();
 });
 
 function initVisitorTracking() {
@@ -638,6 +639,10 @@ function initVideoModal() {
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    if (videoId && history.pushState && !window.location.pathname.includes('/video/' + videoId)) {
+      history.pushState({ videoId }, '', '/video/' + videoId);
+    }
   });
 
   const closeModal = () => {
@@ -648,6 +653,10 @@ function initVideoModal() {
       videoPlayer.src = '';
     }
     document.body.style.overflow = '';
+
+    if (window.location.pathname.startsWith('/video/') || window.location.pathname.startsWith('/videos/')) {
+      if (history.pushState) history.pushState({}, '', '/');
+    }
   };
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -1396,6 +1405,10 @@ function initArticleModal() {
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    if (articleId && history.pushState && !window.location.pathname.includes('/article/' + articleId)) {
+      history.pushState({ articleId }, '', '/article/' + articleId);
+    }
   });
 
   // Handle Video CTA click inside article modal
@@ -1420,6 +1433,8 @@ function initArticleModal() {
         if (ytLink) ytLink.href = `https://www.youtube.com/watch?v=${embedId}`;
         videoModal.classList.add('active');
         document.body.style.overflow = 'hidden';
+
+        if (history.pushState) history.pushState({ videoId: embedId }, '', '/video/' + embedId);
       }
     });
   }
@@ -1427,6 +1442,10 @@ function initArticleModal() {
   const closeModal = () => {
     modal.classList.remove('active');
     document.body.style.overflow = '';
+
+    if (window.location.pathname.startsWith('/article/') || window.location.pathname.startsWith('/articles/') || window.location.pathname.startsWith('/story/')) {
+      if (history.pushState) history.pushState({}, '', '/');
+    }
   };
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -1565,6 +1584,202 @@ function initMobileMenu() {
     if (e.key === 'Escape' && !drawer.classList.contains('hidden')) {
       closeDrawer();
     }
+  });
+}
+
+/* --------------------------------------------------------------------------
+   13. CLIENT-SIDE DEEP-LINK ROUTER FOR PRODUCTION & VERCEL
+   -------------------------------------------------------------------------- */
+function openVideoModalById(videoId) {
+  if (!videoId) return;
+  const modal = document.getElementById('video-modal');
+  const iframe = document.getElementById('modal-video-iframe');
+  const videoPlayer = document.getElementById('modal-video-player');
+  const titleEl = document.getElementById('modal-video-title');
+  const descEl = document.getElementById('modal-video-desc');
+  const ytLink = document.getElementById('modal-youtube-link');
+
+  if (!modal) return;
+
+  let title = 'Veyra Trails Travel Video';
+  let desc = 'Explore authentic travel stories, regional gastronomy, and landscapes with Veyra Trails.';
+  let rawUrl = '';
+
+  const domCard = document.querySelector(`[data-video-id="${videoId}"], [data-video-url*="${videoId}"]`);
+  if (domCard) {
+    rawUrl = domCard.getAttribute('data-video-url') || '';
+    title = domCard.getAttribute('data-video-title') || domCard.querySelector('h3, h2')?.textContent?.trim() || title;
+    desc = domCard.getAttribute('data-video-desc') || domCard.querySelector('p')?.textContent?.trim() || desc;
+  }
+
+  if (window.VeyraDB) {
+    const dbVid = window.VeyraDB.getById('videos', videoId) || window.VeyraDB.getAll('videos').find(v => v.youtubeUrl?.includes(videoId));
+    if (dbVid) {
+      title = dbVid.title || title;
+      desc = dbVid.description || desc;
+      rawUrl = dbVid.youtubeUrl || dbVid.video_url || rawUrl;
+    }
+  }
+
+  const defaultVideoId = '5D3cZ-6tGkY';
+  const ytId = extractYouTubeId(rawUrl) || extractYouTubeId(videoId) || (videoId.length === 11 ? videoId : defaultVideoId);
+  const isUploadedFile = !ytId && rawUrl.length > 0 && (rawUrl.startsWith('/uploads/') || rawUrl.match(/\.(mp4|webm|mov)(\?.*)?$/i));
+
+  if (isUploadedFile && videoPlayer) {
+    if (iframe) {
+      iframe.src = '';
+      iframe.classList.add('hidden');
+    }
+    videoPlayer.src = rawUrl;
+    videoPlayer.classList.remove('hidden');
+    videoPlayer.load();
+    videoPlayer.play().catch(() => {});
+    if (ytLink) ytLink.href = rawUrl;
+  } else {
+    const embedId = ytId || defaultVideoId;
+    const embedUrl = `https://www.youtube.com/embed/${embedId}?autoplay=1&enablejsapi=1&rel=0`;
+    const watchUrl = `https://www.youtube.com/watch?v=${embedId}`;
+
+    if (videoPlayer) {
+      videoPlayer.pause();
+      videoPlayer.src = '';
+      videoPlayer.classList.add('hidden');
+    }
+    if (iframe) {
+      iframe.src = embedUrl;
+      iframe.classList.remove('hidden');
+    }
+    if (ytLink) ytLink.href = watchUrl;
+  }
+
+  if (titleEl) titleEl.textContent = title;
+  if (descEl) descEl.textContent = desc;
+
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function openArticleModalById(articleId) {
+  if (!articleId) return;
+  const modal = document.getElementById('article-modal');
+  const titleEl = document.getElementById('modal-article-title');
+  const catEl = document.getElementById('modal-article-category');
+  const dateEl = document.getElementById('modal-article-date');
+  const timeEl = document.getElementById('modal-article-readtime');
+  const imgEl = document.getElementById('modal-article-img');
+  const bodyEl = document.getElementById('modal-article-body');
+  const quoteEl = document.getElementById('modal-article-quote');
+  const videoCta = document.getElementById('modal-article-video-cta');
+
+  if (!modal) return;
+
+  let data = articleData[articleId];
+
+  if (!data && window.fetchedArticles) {
+    const artObj = window.fetchedArticles.find(a => a.id === articleId || a.title?.toLowerCase().includes(articleId.toLowerCase()));
+    if (artObj) {
+      data = {
+        title: artObj.title,
+        category: artObj.category || 'Travel',
+        date: artObj.date || 'Sept 2026',
+        readTime: artObj.read_time || '5 min read',
+        img: artObj.image,
+        quote: artObj.quote || `"${artObj.title}"`,
+        videoId: artObj.video_id || 'Z4yM3xERGvA',
+        body: artObj.content ? artObj.content.replace(/\n\n/g, '</p><p class="mt-4">').replace(/\n/g, '<br>') : artObj.description
+      };
+    }
+  }
+
+  if (!data && window.VeyraDB) {
+    const dbArt = window.VeyraDB.getById('articles', articleId);
+    if (dbArt) {
+      data = {
+        title: dbArt.title,
+        category: dbArt.category || 'Travel',
+        date: dbArt.date || 'Sept 2026',
+        readTime: dbArt.readTime || '5 min read',
+        img: dbArt.img || dbArt.image,
+        quote: dbArt.quote || `"${dbArt.title}"`,
+        videoId: dbArt.videoId || 'Z4yM3xERGvA',
+        body: dbArt.body || dbArt.content || `<p>${dbArt.description || ''}</p>`
+      };
+    }
+  }
+
+  if (!data) {
+    const domCard = document.querySelector(`[data-article-id="${articleId}"]`);
+    if (domCard) {
+      const heading = domCard.querySelector('h3, h2');
+      const desc = domCard.querySelector('p');
+      const img = domCard.querySelector('img');
+      if (heading) {
+        data = {
+          title: heading.textContent.trim(),
+          category: 'Travel Journal',
+          date: 'Sept 2026',
+          readTime: '5 min read',
+          img: img ? img.src : '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuC3ktJ0r9ZmiMpAE1kJI_kCDkJIRlIpkwNdw54Hv2qlQazyVfRLsZiYo3DetM3TxYS8EYVEiD5LW-dqIi1FyZT3pntuV6JV-236acde6080bf3f770c98cca77aa020d',
+          quote: `"${heading.textContent.trim()}"`,
+          videoId: 'Z4yM3xERGvA',
+          body: `<p class="font-headline text-lg text-amber-200">${heading.textContent.trim()}</p><p class="mt-4">${desc ? desc.textContent.trim() : 'Explore authentic travel stories, regional gastronomy, and landscapes with Veyra Trails.'}</p>`
+        };
+      }
+    }
+  }
+
+  if (!data) return;
+
+  if (titleEl) titleEl.textContent = data.title;
+  if (catEl) catEl.textContent = data.category;
+  if (dateEl) dateEl.textContent = data.date;
+  if (timeEl) timeEl.textContent = data.readTime;
+  if (imgEl) imgEl.src = data.img;
+  if (bodyEl) bodyEl.innerHTML = data.body;
+  if (quoteEl) quoteEl.textContent = data.quote;
+
+  if (videoCta) {
+    const vId = extractYouTubeId(data.videoId) || data.videoId || 'Z4yM3xERGvA';
+    videoCta.setAttribute('data-video-id', vId);
+    videoCta.setAttribute('data-video-title', `${data.title} — Travel Film`);
+  }
+
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function initAppRouter() {
+  const route = window.location.pathname.toLowerCase();
+  const hash = window.location.hash.toLowerCase();
+
+  const vMatch = route.match(/^\/(?:video|videos)\/([a-zA-Z0-9_-]+)/i) || hash.match(/^#\/?(?:video|videos)\/([a-zA-Z0-9_-]+)/i);
+  if (vMatch && vMatch[1]) {
+    setTimeout(() => { openVideoModalById(vMatch[1]); }, 250);
+  }
+
+  const aMatch = route.match(/^\/(?:article|articles|story|stories|blog)\/([a-zA-Z0-9_-]+)/i) || hash.match(/^#\/?(?:article|articles|story|stories|blog)\/([a-zA-Z0-9_-]+)/i);
+  if (aMatch && aMatch[1]) {
+    setTimeout(() => { openArticleModalById(aMatch[1]); }, 250);
+  }
+
+  window.addEventListener('popstate', () => {
+    const r = window.location.pathname.toLowerCase();
+    const h = window.location.hash.toLowerCase();
+    const vm = r.match(/^\/(?:video|videos)\/([a-zA-Z0-9_-]+)/i) || h.match(/^#\/?(?:video|videos)\/([a-zA-Z0-9_-]+)/i);
+    if (vm && vm[1]) {
+      openVideoModalById(vm[1]);
+      return;
+    }
+    const am = r.match(/^\/(?:article|articles|story|stories|blog)\/([a-zA-Z0-9_-]+)/i) || h.match(/^#\/?(?:article|articles|story|stories|blog)\/([a-zA-Z0-9_-]+)/i);
+    if (am && am[1]) {
+      openArticleModalById(am[1]);
+      return;
+    }
+    const vModal = document.getElementById('video-modal');
+    const aModal = document.getElementById('article-modal');
+    if (vModal) vModal.classList.remove('active');
+    if (aModal) aModal.classList.remove('active');
+    document.body.style.overflow = '';
   });
 }
 
