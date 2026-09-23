@@ -557,11 +557,11 @@ function initVideoModal() {
   // Event Delegation for All Video Cards & Triggers Across the Website
   document.addEventListener('click', (e) => {
     // Ignore article clicks so initArticleModal can open articles
-    if (e.target.closest('.article-card-item, [data-article-id]') && !e.target.closest('.play-btn-trigger, [data-video-id]')) {
+    if (e.target.closest('.article-card-item, [data-article-id], .read-article-btn') && !e.target.closest('.play-btn-trigger, [data-video-id]')) {
       return;
     }
 
-    const cardOrTrigger = e.target.closest('[data-video-id], [data-video-url], .play-btn-trigger, .vlog-card-item, .tilt-card');
+    const cardOrTrigger = e.target.closest('[data-video-id], [data-video-url], .play-btn-trigger, .vlog-card-item');
     
     if (!cardOrTrigger) return;
 
@@ -1218,6 +1218,23 @@ const articleData = {
       </p>
       <p>
         Sleeping under a blanket of desert stars away from city light pollution reminds us why ancient nomads navigated by the constellations for millennia.
+      </p>
+    `
+  },
+  'goa-coastal': {
+    title: 'Goa – Beaches, Culture and Coastal Adventures',
+    category: 'Travel Guide',
+    date: 'July 2026',
+    readTime: '5 min read',
+    img: '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuDTKlMUVJs5CW0qdr0i4g1b8GxNa705yFpSLaVwNe1vphO1xjqEymsWXsDYG-zbW184S4zI7doawe8-WynyRxFvtGvjLPsb-994da734d2052fe1ff35994a9d8d6a4b',
+    quote: '"Experience Goa\'s unique blend of Indian and Portuguese influences, sunlit beaches, and coastal heritage."',
+    videoId: 'z_8Gzjx3s_Q',
+    body: `
+      <p class="font-headline text-lg text-amber-200 font-normal leading-relaxed">
+        Goa is known for its beautiful coastline, beaches, Portuguese-influenced architecture, local food and relaxed atmosphere.
+      </p>
+      <p>
+        Visitors can explore beaches, historic churches, colourful markets and coastal villages while experiencing Goa's unique blend of Indian and Portuguese influences.
       </p>
     `
   }
