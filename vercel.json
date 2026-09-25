@@ -1,28 +1,66 @@
 {
   "version": 2,
-  "outputDirectory": ".",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.js" },
-    { "source": "/admin/admin.css", "destination": "/admin/admin.css" },
-    { "source": "/admin/admin.js", "destination": "/admin/admin.js" },
-    { "source": "/admin/login", "destination": "/admin/index.html" },
-    { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/", "destination": "/admin/index.html" },
-    { "source": "/admin/(dashboard|overview|destinations|videos|stories|messages|enquiries|visitors|social|website|settings|activity|gallery|contact-info)", "destination": "/admin/index.html" },
-    { "source": "/video/(.*)", "destination": "/index.html" },
-    { "source": "/videos/(.*)", "destination": "/index.html" },
-    { "source": "/article/(.*)", "destination": "/index.html" },
-    { "source": "/articles/(.*)", "destination": "/index.html" },
-    { "source": "/story/(.*)", "destination": "/index.html" },
-    { "source": "/stories/(.*)", "destination": "/index.html" },
-    { "source": "/destination/(.*)", "destination": "/index.html" },
-    { "source": "/destinations/(.*)", "destination": "/index.html" },
-    { "source": "/about", "destination": "/index.html" },
-    { "source": "/travel", "destination": "/index.html" },
-    { "source": "/food", "destination": "/index.html" },
-    { "source": "/vlogs", "destination": "/index.html" },
-    { "source": "/gallery", "destination": "/index.html" },
-    { "source": "/reels", "destination": "/index.html" },
-    { "source": "/contact", "destination": "/index.html" }
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "admin/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "assets/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "app.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "styles.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "favicon.svg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "robots.txt",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "sitemap.xml",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.js" },
+    { "src": "/admin/admin.css", "dest": "/admin/admin.css" },
+    { "src": "/admin/admin.js", "dest": "/admin/admin.js" },
+    { "src": "/admin/login", "dest": "/admin/index.html" },
+    { "src": "/admin", "dest": "/admin/index.html" },
+    { "src": "/admin/", "dest": "/admin/index.html" },
+    { "src": "/admin/(dashboard|overview|destinations|videos|stories|messages|enquiries|visitors|social|website|settings|activity|gallery|contact-info)", "dest": "/admin/index.html" },
+    { "src": "/video/(.*)", "dest": "/index.html" },
+    { "src": "/videos/(.*)", "dest": "/index.html" },
+    { "src": "/article/(.*)", "dest": "/index.html" },
+    { "src": "/articles/(.*)", "dest": "/index.html" },
+    { "src": "/story/(.*)", "dest": "/index.html" },
+    { "src": "/stories/(.*)", "dest": "/index.html" },
+    { "src": "/destination/(.*)", "dest": "/index.html" },
+    { "src": "/destinations/(.*)", "dest": "/index.html" },
+    { "src": "/about", "dest": "/index.html" },
+    { "src": "/travel", "dest": "/index.html" },
+    { "src": "/food", "dest": "/index.html" },
+    { "src": "/vlogs", "dest": "/index.html" },
+    { "src": "/gallery", "dest": "/index.html" },
+    { "src": "/reels", "dest": "/index.html" },
+    { "src": "/contact", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
