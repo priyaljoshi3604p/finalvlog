@@ -9,7 +9,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import multer from 'multer';
-import db, { initDatabase } from './db/index.js';
+import db, { initDatabase, uploadFileToSupabase } from './db/index.js';
 
 dotenv.config();
 
@@ -20,44 +20,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'veyra_trails_fallback_secret_key_2026';
 
-// Initialize DB schema & seeds
-initDatabase();
+// Initialize DB schema & seeds asynchronously
+initDatabase().catch(err => console.error('Database initialization error:', err));
 
-// Ensure upload directories exist. On Vercel the project's own files are
-// read-only, so uploads must go to /tmp instead. Note: /tmp on Vercel is
-// ephemeral (wiped between cold starts / deployments), so files uploaded
-// through the admin panel there won't persist long-term — for production use,
-// swap this out for a real storage service (Vercel Blob, S3, Cloudinary...).
-const uploadsDir = process.env.VERCEL
-  ? '/tmp/uploads'
-  : path.join(__dirname, 'uploads');
-const videosDir = path.join(uploadsDir, 'videos');
-const thumbsDir = path.join(uploadsDir, 'thumbnails');
-
-[uploadsDir, videosDir, thumbsDir].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-});
-
-// Configure Multer Storage for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    if (file.fieldname === 'video_file' || (file.mimetype && file.mimetype.startsWith('video/'))) {
-      cb(null, videosDir);
-    } else {
-      cb(null, thumbsDir);
-    }
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || (file.fieldname === 'video_file' ? '.mp4' : '.jpg');
-    const safeName = Date.now() + '_' + Math.random().toString(36).substring(2, 8) + ext;
-    cb(null, safeName);
-  }
-});
-
+// Configure Multer to use memory storage for Supabase Storage uploads
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 500 * 1024 * 1024 } // 500MB max limit
 });
 
@@ -66,13 +34,17 @@ app.use(cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use(cookieParser());
-app.use('/uploads', express.static(uploadsDir));
+
+// Serve local upload fallbacks if present
+const localUploadsDir = path.join(__dirname, 'uploads');
+if (fs.existsSync(localUploadsDir)) {
+  app.use('/uploads', express.static(localUploadsDir));
+}
 
 // Logger Helper
-function logActivity(action, entity, description) {
+async function logActivity(action, entity, description) {
   try {
-    db.prepare('INSERT INTO activity_log (action, entity, description) VALUES (?, ?, ?)')
-      .run(action, entity, description);
+    await db.logActivity(action, entity, description);
   } catch (err) {
     console.error('Failed to log activity:', err);
   }
@@ -161,19 +133,26 @@ app.post('/api/enquiries', async (req, res) => {
 
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
 
-    const stmtEnquiry = db.prepare(`
-      INSERT INTO enquiry (name, email, phone, subject, message, status, ip_address)
-      VALUES (?, ?, ?, ?, ?, 'New', ?)
-    `);
-    const result = stmtEnquiry.run(name, email, phone || '', subject || 'General Inquiry', message, ip);
+    const newEnquiry = await db.createEnquiry({
+      name,
+      email,
+      phone: phone || '',
+      subject: subject || 'General Inquiry',
+      message,
+      status: 'New',
+      ip_address: ip
+    });
 
-    // Also copy to contact_message table
-    db.prepare(`
-      INSERT INTO contact_message (name, email, phone, subject, message, status)
-      VALUES (?, ?, ?, ?, ?, 'New')
-    `).run(name, email, phone || '', subject || 'General Inquiry', message);
+    await db.createContactMessage({
+      name,
+      email,
+      phone: phone || '',
+      subject: subject || 'General Inquiry',
+      message,
+      status: 'New'
+    });
 
-    logActivity('ENQUIRY_SUBMITTED', 'Enquiry', `New enquiry #${result.lastInsertRowid} submitted by ${name} (${email})`);
+    await logActivity('ENQUIRY_SUBMITTED', 'Enquiry', `New enquiry #${newEnquiry.id} submitted by ${name} (${email})`);
 
     // Asynchronously dispatch notification email
     sendNotificationEmail({ name, email, phone, subject, message });
@@ -181,7 +160,7 @@ app.post('/api/enquiries', async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Thank you! Your message has been received. We will get back to you soon.',
-      enquiryId: result.lastInsertRowid
+      enquiryId: newEnquiry.id
     });
   } catch (error) {
     console.error('Enquiry submission error:', error);
@@ -190,7 +169,7 @@ app.post('/api/enquiries', async (req, res) => {
 });
 
 // 2. Track Website Visitors / Activity
-app.post('/api/visitors/track', (req, res) => {
+app.post('/api/visitors/track', async (req, res) => {
   try {
     const { sessionId, pageVisited, referrer } = req.body;
     const userAgent = req.headers['user-agent'] || '';
@@ -200,10 +179,13 @@ app.post('/api/visitors/track', (req, res) => {
       return res.status(400).json({ success: false, error: 'sessionId and pageVisited required' });
     }
 
-    db.prepare(`
-      INSERT INTO website_visitor (session_id, page_visited, referrer, user_agent, ip_address)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(sessionId, pageVisited, referrer || '', userAgent, ip);
+    await db.trackVisitor({
+      session_id: sessionId,
+      page_visited: pageVisited,
+      referrer: referrer || '',
+      user_agent: userAgent,
+      ip_address: ip
+    });
 
     res.json({ success: true });
   } catch (error) {
@@ -213,38 +195,36 @@ app.post('/api/visitors/track', (req, res) => {
 });
 
 // 3. Public Content Endpoints
-app.get(['/api/public/videos', '/public/videos'], (req, res) => {
+app.get(['/api/public/videos', '/public/videos'], async (req, res) => {
   try {
-    const videos = db.prepare(`SELECT * FROM video WHERE status = 'active' ORDER BY featured DESC, created_at DESC`).all();
+    const videos = await db.getPublicVideos();
     res.json({ success: true, videos });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to load videos' });
   }
 });
 
-app.get(['/api/public/destinations', '/public/destinations'], (req, res) => {
+app.get(['/api/public/destinations', '/public/destinations'], async (req, res) => {
   try {
-    const destinations = db.prepare(`SELECT * FROM destination WHERE status = 'active' ORDER BY created_at DESC`).all();
+    const destinations = await db.getPublicDestinations();
     res.json({ success: true, destinations });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to load destinations' });
   }
 });
 
-app.get(['/api/public/articles', '/public/articles'], (req, res) => {
+app.get(['/api/public/articles', '/public/articles'], async (req, res) => {
   try {
-    const articles = db.prepare(`SELECT * FROM article WHERE status = 'published' ORDER BY created_at DESC`).all();
+    const articles = await db.getPublicArticles();
     res.json({ success: true, articles });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to load articles' });
   }
 });
 
-app.get(['/api/public/settings', '/public/settings'], (req, res) => {
+app.get(['/api/public/settings', '/public/settings'], async (req, res) => {
   try {
-    const rows = db.prepare(`SELECT key, value FROM settings`).all();
-    const settings = {};
-    rows.forEach(row => { settings[row.key] = row.value; });
+    const settings = await db.getSettings();
     res.json({ success: true, settings });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to load settings' });
@@ -255,14 +235,14 @@ app.get(['/api/public/settings', '/public/settings'], (req, res) => {
    ADMIN AUTHENTICATION API
    ========================================================================== */
 
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ success: false, error: 'Email/username and password required' });
     }
 
-    const admin = db.prepare('SELECT * FROM admin WHERE email = ? OR username = ?').get(email, email);
+    const admin = await db.getAdminByEmailOrUsername(email);
     if (!admin) {
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
@@ -280,12 +260,12 @@ app.post('/api/admin/login', (req, res) => {
 
     res.cookie('admin_token', token, {
       httpOnly: true,
-      secure: false, // Local dev
+      secure: false, // Local dev & Vercel HTTPS
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    logActivity('ADMIN_LOGIN', 'Auth', `Admin ${admin.name} logged into control center`);
+    await logActivity('ADMIN_LOGIN', 'Auth', `Admin ${admin.name} logged into control center`);
 
     res.json({
       success: true,
@@ -318,47 +298,10 @@ app.get('/api/admin/me', requireAuth, (req, res) => {
    ========================================================================== */
 
 // 1. Dashboard Overview Stats
-app.get('/api/admin/dashboard', requireAuth, (req, res) => {
+app.get('/api/admin/dashboard', requireAuth, async (req, res) => {
   try {
-    const totalEnquiries = db.prepare('SELECT COUNT(*) as count FROM enquiry').get().count;
-    const newEnquiries = db.prepare("SELECT COUNT(*) as count FROM enquiry WHERE status = 'New'").get().count;
-    const totalVisitors = db.prepare('SELECT COUNT(DISTINCT session_id) as count FROM website_visitor').get().count;
-    const totalPageviews = db.prepare('SELECT COUNT(*) as count FROM website_visitor').get().count;
-    const contactMessages = db.prepare('SELECT COUNT(*) as count FROM contact_message').get().count;
-    const totalVideos = db.prepare('SELECT COUNT(*) as count FROM video').get().count;
-    const totalDestinations = db.prepare('SELECT COUNT(*) as count FROM destination').get().count;
-    const totalArticles = db.prepare('SELECT COUNT(*) as count FROM article').get().count;
-
-    const recentEnquiries = db.prepare('SELECT * FROM enquiry ORDER BY created_at DESC LIMIT 6').all();
-    const recentVisitors = db.prepare('SELECT * FROM website_visitor ORDER BY visited_at DESC LIMIT 8').all();
-    const recentActivity = db.prepare('SELECT * FROM activity_log ORDER BY created_at DESC LIMIT 10').all();
-
-    // Most viewed pages
-    const topPages = db.prepare(`
-      SELECT page_visited, COUNT(*) as views 
-      FROM website_visitor 
-      GROUP BY page_visited 
-      ORDER BY views DESC 
-      LIMIT 5
-    `).all();
-
-    res.json({
-      success: true,
-      stats: {
-        totalEnquiries,
-        newEnquiries,
-        totalVisitors,
-        totalPageviews,
-        contactMessages,
-        totalVideos,
-        totalDestinations,
-        totalArticles
-      },
-      recentEnquiries,
-      recentVisitors,
-      recentActivity,
-      topPages
-    });
+    const data = await db.getDashboardData();
+    res.json({ success: true, ...data });
   } catch (error) {
     console.error('Dashboard error:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch dashboard data' });
@@ -366,33 +309,17 @@ app.get('/api/admin/dashboard', requireAuth, (req, res) => {
 });
 
 // 2. Enquiries Management
-app.get('/api/admin/enquiries', requireAuth, (req, res) => {
+app.get('/api/admin/enquiries', requireAuth, async (req, res) => {
   try {
     const { status, search } = req.query;
-    let query = 'SELECT * FROM enquiry WHERE 1=1';
-    const params = [];
-
-    if (status && status !== 'All') {
-      query += ' AND status = ?';
-      params.push(status);
-    }
-
-    if (search) {
-      query += ' AND (name LIKE ? OR email LIKE ? OR subject LIKE ? OR message LIKE ?)';
-      const term = `%${search}%`;
-      params.push(term, term, term, term);
-    }
-
-    query += ' ORDER BY created_at DESC';
-
-    const enquiries = db.prepare(query).all(...params);
+    const enquiries = await db.getEnquiries({ status, search });
     res.json({ success: true, enquiries });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch enquiries' });
   }
 });
 
-app.put('/api/admin/enquiries/:id', requireAuth, (req, res) => {
+app.put('/api/admin/enquiries/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -401,8 +328,8 @@ app.put('/api/admin/enquiries/:id', requireAuth, (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid status' });
     }
 
-    db.prepare('UPDATE enquiry SET status = ? WHERE id = ?').run(status, id);
-    logActivity('ENQUIRY_UPDATE', 'Enquiry', `Updated enquiry #${id} status to ${status}`);
+    await db.updateEnquiryStatus(id, status);
+    await logActivity('ENQUIRY_UPDATE', 'Enquiry', `Updated enquiry #${id} status to ${status}`);
 
     res.json({ success: true, message: `Enquiry #${id} marked as ${status}` });
   } catch (error) {
@@ -410,11 +337,11 @@ app.put('/api/admin/enquiries/:id', requireAuth, (req, res) => {
   }
 });
 
-app.delete('/api/admin/enquiries/:id', requireAuth, (req, res) => {
+app.delete('/api/admin/enquiries/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    db.prepare('DELETE FROM enquiry WHERE id = ?').run(id);
-    logActivity('ENQUIRY_DELETE', 'Enquiry', `Deleted enquiry #${id}`);
+    await db.deleteEnquiry(id);
+    await logActivity('ENQUIRY_DELETE', 'Enquiry', `Deleted enquiry #${id}`);
 
     res.json({ success: true, message: `Enquiry #${id} deleted` });
   } catch (error) {
@@ -423,22 +350,22 @@ app.delete('/api/admin/enquiries/:id', requireAuth, (req, res) => {
 });
 
 // 3. Contact Messages Management
-app.get('/api/admin/messages', requireAuth, (req, res) => {
+app.get('/api/admin/messages', requireAuth, async (req, res) => {
   try {
-    const messages = db.prepare('SELECT * FROM contact_message ORDER BY created_at DESC').all();
+    const messages = await db.getContactMessages();
     res.json({ success: true, messages });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch contact messages' });
   }
 });
 
-app.put('/api/admin/messages/:id', requireAuth, (req, res) => {
+app.put('/api/admin/messages/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    db.prepare('UPDATE contact_message SET status = ? WHERE id = ?').run(status, id);
-    logActivity('MESSAGE_UPDATE', 'Message', `Updated message #${id} status to ${status}`);
+    await db.updateContactMessageStatus(id, status);
+    await logActivity('MESSAGE_UPDATE', 'Message', `Updated message #${id} status to ${status}`);
 
     res.json({ success: true, message: `Message status updated to ${status}` });
   } catch (error) {
@@ -446,11 +373,11 @@ app.put('/api/admin/messages/:id', requireAuth, (req, res) => {
   }
 });
 
-app.delete('/api/admin/messages/:id', requireAuth, (req, res) => {
+app.delete('/api/admin/messages/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    db.prepare('DELETE FROM contact_message WHERE id = ?').run(id);
-    logActivity('MESSAGE_DELETE', 'Message', `Deleted message #${id}`);
+    await db.deleteContactMessage(id);
+    await logActivity('MESSAGE_DELETE', 'Message', `Deleted message #${id}`);
 
     res.json({ success: true, message: `Message #${id} deleted` });
   } catch (error) {
@@ -459,66 +386,65 @@ app.delete('/api/admin/messages/:id', requireAuth, (req, res) => {
 });
 
 // 4. Visitors & Traffic Analytics
-app.get('/api/admin/visitors', requireAuth, (req, res) => {
+app.get('/api/admin/visitors', requireAuth, async (req, res) => {
   try {
-    const totalVisitors = db.prepare('SELECT COUNT(DISTINCT session_id) as count FROM website_visitor').get().count;
-    const totalPageviews = db.prepare('SELECT COUNT(*) as count FROM website_visitor').get().count;
-
-    const recentVisitors = db.prepare('SELECT * FROM website_visitor ORDER BY visited_at DESC LIMIT 50').all();
-
-    const topPages = db.prepare(`
-      SELECT page_visited, COUNT(*) as views 
-      FROM website_visitor 
-      GROUP BY page_visited 
-      ORDER BY views DESC
-    `).all();
-
+    const analytics = await db.getVisitorAnalytics();
     res.json({
       success: true,
-      stats: { totalVisitors, totalPageviews },
-      recentVisitors,
-      topPages
+      stats: analytics.stats,
+      recentVisitors: analytics.recentVisitors,
+      topPages: analytics.topPages
     });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch visitor analytics' });
   }
 });
 
-// 4.5 File Upload API for Videos & Thumbnails
+// 4.5 File Upload API for Videos, Thumbnails & Article Images (Supabase Storage)
 app.post('/api/admin/upload', requireAuth, upload.fields([
   { name: 'video_file', maxCount: 1 },
-  { name: 'thumbnail_file', maxCount: 1 }
-]), (req, res) => {
+  { name: 'thumbnail_file', maxCount: 1 },
+  { name: 'article_image', maxCount: 1 },
+  { name: 'image_file', maxCount: 1 }
+]), async (req, res) => {
   try {
     const response = { success: true };
     if (req.files) {
       if (req.files.video_file && req.files.video_file[0]) {
         const file = req.files.video_file[0];
-        response.video_url = `/uploads/videos/${file.filename}`;
+        response.video_url = await uploadFileToSupabase(file.buffer, file.originalname, file.mimetype, 'videos');
       }
       if (req.files.thumbnail_file && req.files.thumbnail_file[0]) {
         const file = req.files.thumbnail_file[0];
-        response.thumbnail = `/uploads/thumbnails/${file.filename}`;
+        response.thumbnail = await uploadFileToSupabase(file.buffer, file.originalname, file.mimetype, 'thumbnails');
+      }
+      if (req.files.article_image && req.files.article_image[0]) {
+        const file = req.files.article_image[0];
+        response.image = await uploadFileToSupabase(file.buffer, file.originalname, file.mimetype, 'article-images');
+      }
+      if (req.files.image_file && req.files.image_file[0]) {
+        const file = req.files.image_file[0];
+        response.image = await uploadFileToSupabase(file.buffer, file.originalname, file.mimetype, 'article-images');
       }
     }
     res.json(response);
   } catch (err) {
     console.error('File upload error:', err);
-    res.status(500).json({ success: false, error: 'File upload failed' });
+    res.status(500).json({ success: false, error: 'File upload failed: ' + (err.message || err) });
   }
 });
 
 // 5. Video CRUD
-app.get('/api/admin/videos', requireAuth, (req, res) => {
+app.get('/api/admin/videos', requireAuth, async (req, res) => {
   try {
-    const videos = db.prepare('SELECT * FROM video ORDER BY created_at DESC').all();
+    const videos = await db.getAllVideos();
     res.json({ success: true, videos });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch videos' });
   }
 });
 
-app.post('/api/admin/videos', requireAuth, (req, res) => {
+app.post('/api/admin/videos', requireAuth, async (req, res) => {
   try {
     let { title, description, category, destination, thumbnail, video_url, duration, status, featured } = req.body;
     if (!title || !video_url) {
@@ -527,7 +453,7 @@ app.post('/api/admin/videos', requireAuth, (req, res) => {
 
     const id = 'v_' + Date.now();
     let platform = 'YouTube';
-    if (video_url.startsWith('/uploads/') || video_url.match(/\.(mp4|webm|mov|mkv)(\?.*)?$/i)) {
+    if (video_url.includes('/storage/v1/object/public/') || video_url.startsWith('/uploads/') || video_url.match(/\.(mp4|webm|mov|mkv)(\?.*)?$/i)) {
       platform = 'Uploaded';
     } else {
       const match = video_url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/|\/)([a-zA-Z0-9_-]{11})/);
@@ -542,25 +468,22 @@ app.post('/api/admin/videos', requireAuth, (req, res) => {
     let thumb = thumbnail;
     const defaultThumb = '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404';
 
-    db.prepare(`
-      INSERT INTO video (id, title, description, category, destination, thumbnail, video_url, platform, duration, status, featured)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
+    const videoObj = {
       id,
       title,
-      description || '',
-      category || 'Travel',
-      destination || '',
-      thumb || defaultThumb,
+      description: description || '',
+      category: category || 'Travel',
+      destination: destination || '',
+      thumbnail: thumb || defaultThumb,
       video_url,
       platform,
-      duration || '10:00',
-      status || 'active',
-      featured ? 1 : 0
-    );
+      duration: duration || '10:00',
+      status: status || 'active',
+      featured: featured ? 1 : 0
+    };
 
-    const newVideo = db.prepare('SELECT * FROM video WHERE id = ?').get(id);
-    logActivity('VIDEO_ADD', 'Video', `Added new video "${title}" (${platform})`);
+    const newVideo = await db.addVideo(videoObj);
+    await logActivity('VIDEO_ADD', 'Video', `Added new video "${title}" (${platform})`);
 
     res.status(201).json({ success: true, message: 'Video added successfully', videoId: id, video: newVideo });
   } catch (error) {
@@ -569,13 +492,13 @@ app.post('/api/admin/videos', requireAuth, (req, res) => {
   }
 });
 
-app.put('/api/admin/videos/:id', requireAuth, (req, res) => {
+app.put('/api/admin/videos/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     let { title, description, category, destination, thumbnail, video_url, duration, status, featured } = req.body;
 
     let platform = 'YouTube';
-    if (video_url && (video_url.startsWith('/uploads/') || video_url.match(/\.(mp4|webm|mov|mkv)(\?.*)?$/i))) {
+    if (video_url && (video_url.includes('/storage/v1/object/public/') || video_url.startsWith('/uploads/') || video_url.match(/\.(mp4|webm|mov|mkv)(\?.*)?$/i))) {
       platform = 'Uploaded';
     } else if (video_url) {
       const match = video_url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/|shorts\/|\/)([a-zA-Z0-9_-]{11})/);
@@ -587,11 +510,7 @@ app.put('/api/admin/videos/:id', requireAuth, (req, res) => {
       }
     }
 
-    db.prepare(`
-      UPDATE video 
-      SET title = ?, description = ?, category = ?, destination = ?, thumbnail = ?, video_url = ?, platform = ?, duration = ?, status = ?, featured = ?
-      WHERE id = ?
-    `).run(
+    const updatedVideo = await db.updateVideo(id, {
       title,
       description,
       category,
@@ -601,12 +520,10 @@ app.put('/api/admin/videos/:id', requireAuth, (req, res) => {
       platform,
       duration,
       status,
-      featured ? 1 : 0,
-      id
-    );
+      featured: featured ? 1 : 0
+    });
 
-    const updatedVideo = db.prepare('SELECT * FROM video WHERE id = ?').get(id);
-    logActivity('VIDEO_EDIT', 'Video', `Updated video #${id} ("${title}")`);
+    await logActivity('VIDEO_EDIT', 'Video', `Updated video #${id} ("${title}")`);
 
     res.json({ success: true, message: 'Video updated successfully', video: updatedVideo });
   } catch (error) {
@@ -614,11 +531,11 @@ app.put('/api/admin/videos/:id', requireAuth, (req, res) => {
   }
 });
 
-app.delete('/api/admin/videos/:id', requireAuth, (req, res) => {
+app.delete('/api/admin/videos/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    db.prepare('DELETE FROM video WHERE id = ?').run(id);
-    logActivity('VIDEO_DELETE', 'Video', `Deleted video #${id}`);
+    await db.deleteVideo(id);
+    await logActivity('VIDEO_DELETE', 'Video', `Deleted video #${id}`);
 
     res.json({ success: true, message: 'Video deleted' });
   } catch (error) {
@@ -627,16 +544,16 @@ app.delete('/api/admin/videos/:id', requireAuth, (req, res) => {
 });
 
 // 6. Destination CRUD
-app.get('/api/admin/destinations', requireAuth, (req, res) => {
+app.get('/api/admin/destinations', requireAuth, async (req, res) => {
   try {
-    const destinations = db.prepare('SELECT * FROM destination ORDER BY created_at DESC').all();
+    const destinations = await db.getAllDestinations();
     res.json({ success: true, destinations });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch destinations' });
   }
 });
 
-app.post('/api/admin/destinations', requireAuth, (req, res) => {
+app.post('/api/admin/destinations', requireAuth, async (req, res) => {
   try {
     const { id, name, tag, description, image, video_url, video_id, food, places, experiences, status } = req.body;
     if (!name || !description) {
@@ -645,24 +562,22 @@ app.post('/api/admin/destinations', requireAuth, (req, res) => {
 
     const destId = id || name.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-    db.prepare(`
-      INSERT INTO destination (id, name, tag, description, image, video_url, video_id, food, places, experiences, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      destId,
+    const destObj = {
+      id: destId,
       name,
-      tag || '',
+      tag: tag || '',
       description,
-      image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
-      video_url || '',
-      video_id || '',
-      food || '',
-      places || '',
-      experiences || '',
-      status || 'active'
-    );
+      image: image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+      video_url: video_url || '',
+      video_id: video_id || '',
+      food: food || '',
+      places: places || '',
+      experiences: experiences || '',
+      status: status || 'active'
+    };
 
-    logActivity('DESTINATION_ADD', 'Destination', `Added new destination "${name}"`);
+    await db.addDestination(destObj);
+    await logActivity('DESTINATION_ADD', 'Destination', `Added new destination "${name}"`);
 
     res.status(201).json({ success: true, message: 'Destination added successfully', destinationId: destId });
   } catch (error) {
@@ -671,16 +586,12 @@ app.post('/api/admin/destinations', requireAuth, (req, res) => {
   }
 });
 
-app.put('/api/admin/destinations/:id', requireAuth, (req, res) => {
+app.put('/api/admin/destinations/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, tag, description, image, video_url, video_id, food, places, experiences, status } = req.body;
 
-    db.prepare(`
-      UPDATE destination
-      SET name = ?, tag = ?, description = ?, image = ?, video_url = ?, video_id = ?, food = ?, places = ?, experiences = ?, status = ?
-      WHERE id = ?
-    `).run(
+    await db.updateDestination(id, {
       name,
       tag,
       description,
@@ -690,11 +601,10 @@ app.put('/api/admin/destinations/:id', requireAuth, (req, res) => {
       food,
       places,
       experiences,
-      status,
-      id
-    );
+      status
+    });
 
-    logActivity('DESTINATION_EDIT', 'Destination', `Updated destination "${name}"`);
+    await logActivity('DESTINATION_EDIT', 'Destination', `Updated destination "${name}"`);
 
     res.json({ success: true, message: 'Destination updated successfully' });
   } catch (error) {
@@ -702,11 +612,11 @@ app.put('/api/admin/destinations/:id', requireAuth, (req, res) => {
   }
 });
 
-app.delete('/api/admin/destinations/:id', requireAuth, (req, res) => {
+app.delete('/api/admin/destinations/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    db.prepare('DELETE FROM destination WHERE id = ?').run(id);
-    logActivity('DESTINATION_DELETE', 'Destination', `Deleted destination #${id}`);
+    await db.deleteDestination(id);
+    await logActivity('DESTINATION_DELETE', 'Destination', `Deleted destination #${id}`);
 
     res.json({ success: true, message: 'Destination deleted' });
   } catch (error) {
@@ -715,16 +625,16 @@ app.delete('/api/admin/destinations/:id', requireAuth, (req, res) => {
 });
 
 // Article / Blog CRUD
-app.get('/api/admin/articles', requireAuth, (req, res) => {
+app.get('/api/admin/articles', requireAuth, async (req, res) => {
   try {
-    const articles = db.prepare('SELECT * FROM article ORDER BY created_at DESC').all();
+    const articles = await db.getAllArticles();
     res.json({ success: true, articles });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch articles' });
   }
 });
 
-app.post('/api/admin/articles', requireAuth, (req, res) => {
+app.post('/api/admin/articles', requireAuth, async (req, res) => {
   try {
     const { id, title, description, content, image, category, read_time, date, video_id, quote, status } = req.body;
     if (!title || !content) {
@@ -733,24 +643,22 @@ app.post('/api/admin/articles', requireAuth, (req, res) => {
 
     const artId = id || 'art_' + Date.now();
 
-    db.prepare(`
-      INSERT INTO article (id, title, description, content, image, category, read_time, date, video_id, quote, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      artId,
+    const artObj = {
+      id: artId,
       title,
-      description || '',
+      description: description || '',
       content,
-      image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
-      category || 'Travel Essay',
-      read_time || '5 min read',
-      date || 'Sept 2026',
-      video_id || '',
-      quote || '',
-      status || 'published'
-    );
+      image: image || '/assets/stitch/priyal_editorial_creator_portfolio_stanzza_inspired/assets/AB6AXuAYtyoRsmC4PQLqNIXgcdOZkyziFtgAP-SirvPjAdOIWogt2tQ50admxNCxrFzixktHDzw03edQIxc168p4Rv7NYbrGorpp-2d2fdb95be9e79830687d2d0d7e65404',
+      category: category || 'Travel Essay',
+      read_time: read_time || '5 min read',
+      date: date || 'Sept 2026',
+      video_id: video_id || '',
+      quote: quote || '',
+      status: status || 'published'
+    };
 
-    logActivity('ARTICLE_ADD', 'Article', `Added blog post "${title}"`);
+    await db.addArticle(artObj);
+    await logActivity('ARTICLE_ADD', 'Article', `Added blog post "${title}"`);
 
     res.status(201).json({ success: true, message: 'Blog post created successfully', articleId: artId });
   } catch (error) {
@@ -758,16 +666,12 @@ app.post('/api/admin/articles', requireAuth, (req, res) => {
   }
 });
 
-app.put('/api/admin/articles/:id', requireAuth, (req, res) => {
+app.put('/api/admin/articles/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, content, image, category, read_time, date, video_id, quote, status } = req.body;
 
-    db.prepare(`
-      UPDATE article
-      SET title = ?, description = ?, content = ?, image = ?, category = ?, read_time = ?, date = ?, video_id = ?, quote = ?, status = ?
-      WHERE id = ?
-    `).run(
+    await db.updateArticle(id, {
       title,
       description,
       content,
@@ -777,11 +681,10 @@ app.put('/api/admin/articles/:id', requireAuth, (req, res) => {
       date,
       video_id,
       quote,
-      status,
-      id
-    );
+      status
+    });
 
-    logActivity('ARTICLE_EDIT', 'Article', `Updated blog post "${title}"`);
+    await logActivity('ARTICLE_EDIT', 'Article', `Updated blog post "${title}"`);
 
     res.json({ success: true, message: 'Blog post updated successfully' });
   } catch (error) {
@@ -789,11 +692,11 @@ app.put('/api/admin/articles/:id', requireAuth, (req, res) => {
   }
 });
 
-app.delete('/api/admin/articles/:id', requireAuth, (req, res) => {
+app.delete('/api/admin/articles/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    db.prepare('DELETE FROM article WHERE id = ?').run(id);
-    logActivity('ARTICLE_DELETE', 'Article', `Deleted blog post #${id}`);
+    await db.deleteArticle(id);
+    await logActivity('ARTICLE_DELETE', 'Article', `Deleted blog post #${id}`);
 
     res.json({ success: true, message: 'Blog post deleted' });
   } catch (error) {
@@ -802,27 +705,20 @@ app.delete('/api/admin/articles/:id', requireAuth, (req, res) => {
 });
 
 // 7. Settings Management
-app.get('/api/admin/settings', requireAuth, (req, res) => {
+app.get('/api/admin/settings', requireAuth, async (req, res) => {
   try {
-    const rows = db.prepare('SELECT key, value FROM settings').all();
-    const settings = {};
-    rows.forEach(r => { settings[r.key] = r.value; });
+    const settings = await db.getSettings();
     res.json({ success: true, settings });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch settings' });
   }
 });
 
-app.put('/api/admin/settings', requireAuth, (req, res) => {
+app.put('/api/admin/settings', requireAuth, async (req, res) => {
   try {
     const settingsObj = req.body;
-    const stmt = db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)');
-
-    for (const [key, value] of Object.entries(settingsObj)) {
-      stmt.run(key, String(value));
-    }
-
-    logActivity('SETTINGS_UPDATE', 'Settings', 'Updated global site settings');
+    await db.updateSettings(settingsObj);
+    await logActivity('SETTINGS_UPDATE', 'Settings', 'Updated global site settings');
 
     res.json({ success: true, message: 'Settings saved successfully' });
   } catch (error) {
@@ -832,9 +728,9 @@ app.put('/api/admin/settings', requireAuth, (req, res) => {
 });
 
 // 8. Activity Logs
-app.get('/api/admin/activity', requireAuth, (req, res) => {
+app.get('/api/admin/activity', requireAuth, async (req, res) => {
   try {
-    const activities = db.prepare('SELECT * FROM activity_log ORDER BY created_at DESC LIMIT 100').all();
+    const activities = await db.getActivityLogs();
     res.json({ success: true, activities });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch activity logs' });
@@ -842,28 +738,11 @@ app.get('/api/admin/activity', requireAuth, (req, res) => {
 });
 
 // 9. Global Admin Search API
-app.get('/api/admin/search', requireAuth, (req, res) => {
+app.get('/api/admin/search', requireAuth, async (req, res) => {
   try {
-    const q = (req.query.q || '').trim().toLowerCase();
-    if (!q) {
-      return res.json({ success: true, results: { destinations: [], videos: [], articles: [], messages: [] } });
-    }
-
-    const allDests = db.prepare('SELECT * FROM destination').all();
-    const allVids = db.prepare('SELECT * FROM video').all();
-    const allArts = db.prepare('SELECT * FROM article').all();
-    const allMsgs = db.prepare('SELECT * FROM enquiry').all();
-
-    const destinations = allDests.filter(d => (d.name || '').toLowerCase().includes(q) || (d.description || '').toLowerCase().includes(q));
-    const videos = allVids.filter(v => (v.title || '').toLowerCase().includes(q) || (v.description || '').toLowerCase().includes(q) || (v.destination || '').toLowerCase().includes(q));
-    const articles = allArts.filter(a => (a.title || '').toLowerCase().includes(q) || (a.description || '').toLowerCase().includes(q) || (a.content || '').toLowerCase().includes(q));
-    const messages = allMsgs.filter(m => (m.name || '').toLowerCase().includes(q) || (m.email || '').toLowerCase().includes(q) || (m.subject || '').toLowerCase().includes(q) || (m.message || '').toLowerCase().includes(q));
-
-    res.json({
-      success: true,
-      query: q,
-      results: { destinations, videos, articles, messages }
-    });
+    const q = req.query.q || '';
+    const results = await db.searchAll(q);
+    res.json({ success: true, query: q, results });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Search failed' });
   }
@@ -873,7 +752,6 @@ app.get('/api/admin/search', requireAuth, (req, res) => {
    STATIC FILES & ROUTING
    ========================================================================== */
 
-// Serve static assets from project root & admin directory with MIME type fallback for extensionless images
 const assetStaticOptions = {
   setHeaders: (res, filePath) => {
     if (filePath.includes('stitch') || filePath.includes('AB6AXu') || filePath.includes('AEtjO1')) {
@@ -906,9 +784,7 @@ app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Only bind to a port when running locally (`npm run dev` / `npm start`).
-// On Vercel, the app itself is exported and invoked per-request as a
-// serverless function instead of running a long-lived server.
+// Bind server for local execution
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`🚀 Veyra Trails Server running on http://localhost:${PORT}`);
